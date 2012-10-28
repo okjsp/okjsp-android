@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:key="preference_root" >
+	<CheckBoxPreference 
+		android:key="자동로그인여부"
+		android:title="자동로그인"
+		android:summaryOn="옥희실행시 자동로그인합니다."
+		android:summaryOff="옥희실행시 자동로그인하지 않습니다."
+		android:defaultValue="false" />	
+	<CheckBoxPreference 
+		android:key="뒤로가기제스쳐"
+		android:title="뒤로가기 제스쳐"
+		android:summaryOn="왼쪽에서 오른쪽으로 Swipe시 이전화면으로 되돌아 갑니다."
+		android:summaryOff="뒤로가기 제스쳐를 사용하지 않습니다."
+		android:defaultValue="false" />	
+	<EditTextPreference
+		android:key="닉네임"
+		android:title="닉네임"
+		android:summary="옥희에서 사용할 닉네임을 설정합니다." />
+</PreferenceScreen>

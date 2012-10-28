@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/board_item_next_color"
+    android:gravity="center"
+    android:orientation="horizontal">
+  
+  <ProgressBar
+      android:id="@+id/progressBar"
+      style="?android:attr/progressBarStyleSmall"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_gravity="center" />
+  <TextView
+	       android:id="@+id/제목"
+	       android:layout_width="wrap_content"
+	       android:layout_height="52dp"
+	       android:gravity="center"
+	       android:text="로드중..."
+	       android:textColor="@color/item_gray_selector"
+	       android:textSize="15sp"/> 
+
+</LinearLayout>

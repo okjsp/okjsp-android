@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  android:layout_width="fill_parent"
+  android:layout_height="42dp"
+  android:background="@drawable/board_item_color2">
+  <LinearLayout
+	  android:layout_width="0dp"
+	  android:layout_weight="4"
+	  android:layout_marginTop="5dp"
+	  android:orientation="vertical"
+	  android:gravity="center_vertical"
+	  android:layout_height="wrap_content">
+	  <TextView
+	  	android:layout_width="fill_parent" 
+		android:layout_height="wrap_content"
+		android:layout_marginLeft="10dp"
+		android:id="@+id/textLabel"
+		android:text="메뉴.."
+		android:textColor="@color/item_black_selector"
+		android:textAppearance="?android:attr/textAppearanceMedium"
+	   />
+	   <TextView
+	  	android:layout_width="fill_parent" 
+		android:layout_height="wrap_content"
+		android:layout_marginLeft="10dp"
+		android:id="@+id/detailLabel"
+		android:text="설명.."
+		android:textColor="@color/item_gray_selector"
+		android:textAppearance="?android:attr/textAppearanceSmall"
+	   />
+   </LinearLayout>
+  <LinearLayout
+	  android:layout_width="0dp"
+	  android:layout_weight="1"
+	  android:layout_marginTop="5dp"
+	  android:gravity="center_vertical"
+	  android:layout_height="wrap_content">
+   </LinearLayout>
+</LinearLayout>
