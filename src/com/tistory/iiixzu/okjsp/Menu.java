@@ -48,7 +48,7 @@ import com.tistory.iiixzu.common.ShortcutMenu;
 public class Menu extends CommonActivity implements IRequestObserver, SensorEventListener {
 	
 	private boolean 확장여부;
-	private 메뉴목록아답터 아답터;
+	private Adapter 아답터;
 	private ExpandableListView elv메뉴목록;
 	
 	private boolean isShortCutMode;
@@ -92,7 +92,7 @@ public class Menu extends CommonActivity implements IRequestObserver, SensorEven
     	
         elv메뉴목록=(ExpandableListView)this.findViewById(R.id.메뉴목록);
         elv메뉴목록.addHeaderView(바로가기뷰);
-        아답터=new 메뉴목록아답터();
+        아답터=new Adapter();
 		elv메뉴목록.setAdapter(아답터);
 		elv메뉴목록.setGroupIndicator(null);
 		elv메뉴목록.setOnGroupClickListener(new OnGroupClickListener(){
@@ -352,11 +352,11 @@ public class Menu extends CommonActivity implements IRequestObserver, SensorEven
 	 * 메뉴목록 아답터..
 	 * @author iiixzu
 	 */
-	public class 메뉴목록아답터 extends BaseExpandableListAdapter {
+	public class Adapter extends BaseExpandableListAdapter {
 		
 		private List<HashMap<String,String>> groupList;
 		
-		public 메뉴목록아답터(){
+		public Adapter(){
 			groupList=new ArrayList<HashMap<String,String>>();
 			menuList=new ArrayList<Map<String,String>>();
 	        
