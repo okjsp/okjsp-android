@@ -50,7 +50,7 @@ public class Board extends CommonActivity implements IRequestObserver{
 	private boolean isFirstLoaded;
 	
 	private ListView lv게시물목록;
-	private 게시판목록아답터 아답터;
+	private Adapter 아답터;
 	private ArrayList<Map<String,String>> list;
 	private int pageNum;
 	private boolean isWritable;
@@ -78,7 +78,7 @@ public class Board extends CommonActivity implements IRequestObserver{
         	lv게시물목록.setOnTouchListener(swipeDetector);
         }
         
-        아답터=new 게시판목록아답터();
+        아답터=new Adapter();
         lv게시물목록.setAdapter(아답터);
         lv게시물목록.setOnItemClickListener(new OnItemClickListener(){
 			@Override
@@ -437,9 +437,9 @@ public class Board extends CommonActivity implements IRequestObserver{
 	 * 게시판목록 아답터..
 	 * @author iiixzu
 	 */
-	public class 게시판목록아답터 extends BaseAdapter {
+	public class Adapter extends BaseAdapter {
 			
-        public 게시판목록아답터(){
+        public Adapter(){
         	
         }
         
