@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry kind="con" path="com.android.ide.eclipse.adt.ANDROID_FRAMEWORK"/>
-	<classpathentry kind="con" path="com.android.ide.eclipse.adt.LIBRARIES"/>
-	<classpathentry kind="lib" path="/Users/iiixzu/Documents/develope/environment/eclipse/lib/htmlcleaner-2.2.jar"/>
-	<classpathentry kind="lib" path="/Users/iiixzu/Documents/develope/environment/eclipse/lib/android-query.0.14.12.jar"/>
-	<classpathentry kind="lib" path="/Users/iiixzu/Documents/develope/environment/eclipse/lib/apache.org/apache-mime4j-0.6.jar"/>
-	<classpathentry kind="lib" path="/Users/iiixzu/Documents/develope/environment/eclipse/lib/apache.org/httpmime-4.0.1.jar"/>
-	<classpathentry kind="lib" path="/Users/iiixzu/Documents/develope/environment/eclipse/lib/publisherSDK-2.0.3.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/android-query.0.14.12.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/apache-mime4j-0.6.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/htmlcleaner-2.2.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/httpmime-4.0.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/publisherSDK-2.0.3.0.jar"/>
+	<classpathentry exported="true" kind="con" path="com.android.ide.eclipse.adt.ANDROID_FRAMEWORK"/>
+	<classpathentry exported="true" kind="con" path="com.android.ide.eclipse.adt.LIBRARIES"/>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="gen"/>
 	<classpathentry kind="output" path="bin/classes"/>
