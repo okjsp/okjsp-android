@@ -1,0 +1,21 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity" >
+
+    <shared.ui.actionscontentview.ActionsContentView
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/menu_drawer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:actions_layout="@layout/acv_actions"
+        app:actions_spacing="@dimen/actions_spacing"
+        app:content_layout="@layout/acv_content"
+        app:fade_max_value="@integer/default_pref_fade_max_value"
+        app:fade_type="actions"
+        app:fling_duration="@integer/default_pref_fling_delay"
+        app:shadow_drawable="@drawable/shadow"
+        app:shadow_width="@dimen/default_pref_shadow_width" />
+
+</RelativeLayout>

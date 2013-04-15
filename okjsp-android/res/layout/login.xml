@@ -1,0 +1,20 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:id="@+id/layout_root" android:orientation="vertical"
+	android:layout_width="fill_parent" android:layout_height="fill_parent"
+	android:padding="10dp">
+	<EditText 
+	    	android:id="@+id/아이디" 
+	    	android:layout_width="fill_parent"
+			android:layout_height="wrap_content"
+			android:hint="아이디"
+			android:imeOptions="actionNext"
+			android:singleLine="true"/>	
+	<EditText 
+	    	android:id="@+id/암호" 
+	    	android:layout_width="fill_parent"
+			android:layout_height="wrap_content" 
+			android:inputType="textPassword"
+			android:hint="암호"
+			android:imeOptions="actionDone"
+			android:singleLine="true"/>
+</LinearLayout> 
