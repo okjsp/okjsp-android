@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<selector xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:state_pressed="true" android:color="@color/흰색"/>
-    <item android:state_pressed="false" android:color="@color/회색"/>
-    <item android:state_selected="true" android:color="@color/흰색"/>
-    <item android:state_selected="false" android:color="@color/회색"/>
-    <item android:color="@color/회색"/>
-</selector>

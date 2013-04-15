@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+  
+    http://www.apache.org/licenses/LICENSE-2.0
+  
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+<resources>
+
+    <!-- Actions -->
+    <array name="actions_icons">
+        <item>@null</item>
+        
+        <item>@null</item>
+        <item>@drawable/ic_action_about</item>
+        <item>@drawable/ic_action_about</item>
+        <item>@drawable/ic_action_about</item>
+        <item>@drawable/ic_action_about</item>
+        <item>@drawable/ic_action_about</item>
+        
+        <item>@null</item>
+        <item>@drawable/ic_action_settings</item>
+        <item>@drawable/ic_action_about</item>
+    </array>
+
+    <string-array name="actions_names">
+        <item>Profile</item>
+        
+        <item>BBS</item>
+        <item>책 얘기</item>
+        <item>구인/구직</item>
+        <item>홍보</item>
+        <item>iOS</item>
+        <item>Android</item>
+        
+        <item>Settings</item>
+        <item>설정</item>
+        <item>앱정보</item>
+    </string-array>
+
+    <string-array name="actions_links">
+        <item>profile://settings</item>
+        
+        <item>category://board</item>
+        <item>board://book</item>
+        <item>board://recruit</item>
+        <item>board://pr</item>
+        <item>board://iphone</item>
+        <item>board://android</item>
+        
+        <item>category://settings</item>
+        <item>settings://settings</item>
+        <item>settings://about</item>
+    </string-array>
+
+    <!-- Settings arrays -->
+    <string-array name="spacing_types">
+        <item>Right Offset (RO)</item>
+        <item>Actions Width (AW)</item>
+    </string-array>
+
+    <string-array name="spacing_types_short">
+        <item>RO</item>
+        <item>AW</item>
+    </string-array>
+
+    <integer-array name="spacing_types_values">
+        <item>0</item>
+        <item>1</item>
+    </integer-array>
+
+    <string-array name="width_strings">
+        <item>0</item>
+        <item>8</item>
+        <item>16</item>
+        <item>24</item>
+        <item>32</item>
+        <item>48</item>
+        <item>64</item>
+        <item>96</item>
+        <item>128</item>
+    </string-array>
+
+    <integer-array name="width_values">
+        <item>0</item>
+        <item>8</item>
+        <item>16</item>
+        <item>24</item>
+        <item>32</item>
+        <item>48</item>
+        <item>64</item>
+        <item>96</item>
+        <item>128</item>
+    </integer-array>
+
+    <string-array name="fade_types">
+        <item>None</item>
+        <item>Actions</item>
+        <item>Content</item>
+        <item>Both</item>
+    </string-array>
+
+    <integer-array name="fade_types_values">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+    </integer-array>
+
+    <string-array name="fade_max_value_strings">
+        <item>0</item>
+        <item>64</item>
+        <item>128</item>
+        <item>170</item>
+        <item>255</item>
+    </string-array>
+
+    <integer-array name="fade_max_value_values">
+        <item>0</item>
+        <item>64</item>
+        <item>128</item>
+        <item>170</item>
+        <item>255</item>
+    </integer-array>
+
+    <string-array name="swiping_types">
+        <item>All</item>
+        <item>Edge</item>
+    </string-array>
+
+    <integer-array name="swiping_types_values">
+        <item>0</item>
+        <item>1</item>
+    </integer-array>
+
+    <string-array name="fling_duration_strings">
+        <item>0</item>
+        <item>900</item>
+        <item>1500</item>
+        <item>3000</item>
+    </string-array>
+
+    <integer-array name="fling_duration_values">
+        <item>0</item>
+        <item>900</item>
+        <item>1500</item>
+        <item>3000</item>
+    </integer-array>
+
+</resources>

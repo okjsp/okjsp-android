@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+    
+	<LinearLayout
+        android:id="@+id/linearLayout1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/옥희상단색"
+        android:gravity="center_horizontal|center_vertical"
+        android:orientation="vertical" >
+
+        <TextView
+            android:id="@+id/prompt"
+            android:layout_width="wrap_content"
+            android:layout_height="30dp"
+            android:gravity="center_vertical"
+            android:text="게시물제목이 나타나는 자리입니다."
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:textStyle="bold" 
+            android:visibility="gone"/>        
+            <LinearLayout
+		        android:id="@+id/linearLayout1"
+		        android:layout_width="match_parent"
+		        android:layout_height="44dp"
+		        android:background="@drawable/navigation_bar"
+		        android:gravity="center">
+			  	
+		        <TextView
+		            android:id="@+id/제목"
+		            android:textColor="@color/제목색"
+		            android:layout_width="wrap_content"
+		            android:layout_height="wrap_content"
+		            android:layout_weight="1"
+		            android:gravity="center"
+		            android:text="글쓰기"
+		            android:textAppearance="?android:attr/textAppearanceMedium"
+		            android:textStyle="bold" />
+		
+		    </LinearLayout>
+    </LinearLayout>
+	<EditText
+	    android:id="@+id/글제목"
+	    android:layout_width="match_parent"
+	    android:layout_height="wrap_content"
+	    android:hint="제목"
+	    android:singleLine="true">
+	</EditText>
+	<EditText
+	    android:id="@+id/글내용"
+	    android:layout_width="match_parent"
+	    android:layout_height="match_parent"
+	    android:hint="내용"
+	    android:gravity="top">
+	</EditText>
+
+</LinearLayout>
