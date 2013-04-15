@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#c0c0c0"
+    android:orientation="vertical">
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/헤더뷰"
+        android:paddingLeft="15dp"
+        android:textColor="#ffffff"
+        android:text="바로가기모드..."
+        android:visibility="gone"
+        android:textAppearance="?android:attr/textAppearanceSmall" />
+</LinearLayout>
