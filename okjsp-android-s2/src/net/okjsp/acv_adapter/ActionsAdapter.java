@@ -129,6 +129,10 @@ public class ActionsAdapter extends BaseAdapter {
         return getItemViewType(position) != VIEW_TYPE_CATEGORY;
     }
     
+    public String getTitle(int position) {
+    	return (position >= 0 && position < mTitles.length) ? mTitles[position] : "";
+    }
+    
     public void recycle() {
     	if (mIcons != null) mIcons.recycle();
     }

@@ -16,12 +16,14 @@ public class Post implements Const, Parcelable {
 	protected String ProfileImageUrl;
 	protected int ReadCount;
 	protected String TimeStamp;
+	protected boolean IsEmpty = true;;
 	
 	public int getPostId() {
 		return PostId;
 	}
 
 	public Post setPostId(int postId) {
+		IsEmpty = false;
 		PostId = postId;
 		return this;
 	}
@@ -31,6 +33,7 @@ public class Post implements Const, Parcelable {
 	}
 
 	public Post setBoardName(String boardName) {
+		if (!TextUtils.isEmpty(boardName)) IsEmpty = false;
 		BoardName = boardName;
 		return this;
 	}
@@ -40,6 +43,7 @@ public class Post implements Const, Parcelable {
 	}
 
 	public Post setBoardUrl(String boardUrl) {
+		if (!TextUtils.isEmpty(boardUrl)) IsEmpty = false;
 		BoardUrl = boardUrl;
 		return this;
 	}
@@ -49,6 +53,7 @@ public class Post implements Const, Parcelable {
 	}
 
 	public Post setTitle(String title) {
+		if (!TextUtils.isEmpty(title)) IsEmpty = false;
 		Title = title;
 		return this;
 	}
@@ -58,6 +63,7 @@ public class Post implements Const, Parcelable {
 	}
 
 	public Post setPostUrl(String postUrl) {
+		if (!TextUtils.isEmpty(postUrl)) IsEmpty = false;
 		PostUrl = postUrl;
 		return this;
 	}
@@ -67,6 +73,7 @@ public class Post implements Const, Parcelable {
 	}
 
 	public Post setWriterName(String writerName) {
+		if (!TextUtils.isEmpty(writerName)) IsEmpty = false;
 		WriterName = writerName;
 		return this;
 	}
@@ -75,8 +82,9 @@ public class Post implements Const, Parcelable {
 		return TextUtils.isEmpty(ProfileImageUrl) ? null : (BASE_URL + ProfileImageUrl);
 	}
 
-	public Post setProfileImageUrl(String rofileImageUrl) {
-		ProfileImageUrl = rofileImageUrl;
+	public Post setProfileImageUrl(String profileImageUrl) {
+		if (!TextUtils.isEmpty(profileImageUrl)) IsEmpty = false;
+		ProfileImageUrl = profileImageUrl;
 		return this;
 	}
 
@@ -94,8 +102,13 @@ public class Post implements Const, Parcelable {
 	}
 
 	public Post setTimeStamp(String timeStamp) {
+		if (!TextUtils.isEmpty(timeStamp)) IsEmpty = false;
 		TimeStamp = timeStamp;
 		return this;
+	}
+	
+	public boolean isEmpty() {
+		return IsEmpty;
 	}
 	
 	public boolean isValid() {
@@ -147,5 +160,21 @@ public class Post implements Const, Parcelable {
         public Post[] newArray(int size) {
             return new Post[size];
         }
-    };	
+    };
+    
+    public String toString() {
+    	String result = "";
+    	
+    	result +=   "Writer     : " + getWriterName();
+    	result += "\n    ImageUrl   : " + getProfileImageUrl();
+    	result += "\n    Post Id    : " + getPostId();
+    	result += "\n    Board Name : " + getBoardName();
+    	result += "\n    Board URL  : " + getBoardUrl();
+    	result += "\n    Title      : " + getTitle();
+    	result += "\n    Post URL   : " + getPostUrl();
+    	result += "\n    Read Count : " + getReadCount();
+    	result += "\n    Time stamp : " + getTimeStamp();
+    	
+    	return result;
+    }
 }

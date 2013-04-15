@@ -207,7 +207,7 @@ public class ViewPostActivity extends ListActivity {
 				for(Element ul : ul_list) {
 					Comment comment = new Comment();
 					
-					Log.d(TAG, "[]" + ul.toString());
+					//Log.d(TAG, "[]" + ul.toString());
 					List<Element> li_list = ul.getAllElements(HTMLElementName.LI);
 					for(Element li : li_list) {
 						String attr_value = li.getAttributeValue("class");
@@ -228,7 +228,7 @@ public class ViewPostActivity extends ListActivity {
 							List<Element> a_list = li.getAllElements(HTMLElementName.A);
 							if (a_list != null && a_list.size() > 0) {
 								Element href = a_list.get(0);
-								Log.e(TAG, "" + href.getAttributeValue("href"));
+								//Log.e(TAG, "" + href.getAttributeValue("href"));
 								//comment.setProfileImageUrl(href.getAttributeValue("href"));
 							}
 						}

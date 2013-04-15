@@ -187,12 +187,12 @@ public class MainFragment extends ListFragment {
 								if (TextUtils.isEmpty(post.getWriterName())) {
 									post.setWriterName(value);
 								} else {
-									Log.e(TAG, "Writer field is NOT EMPTY!! " + post.getWriterName());
+									Log.w(TAG, "Writer field is NOT EMPTY!! " + post.getWriterName());
 								}
 							} else if ("read tiny".equalsIgnoreCase(attr_value)) {
 								post.setReadCount(Integer.valueOf(value));
 							} else if ("th".equalsIgnoreCase(attr_value)) {
-								Log.e(TAG, value);
+								// Log.e(TAG, value);
 								if ("공지사항".equals(value)) post_type = POST_TYPE_NOTICE;
 								else if ("전체 게시판".equals(value)) post_type = POST_TYPE_RECENT;
 							}
@@ -216,8 +216,8 @@ public class MainFragment extends ListFragment {
 							mRecentPostList.add(post);
 							break;
 						}
-					} else {
-						Log.e(TAG, "INVALID POST:" + post.getTitle());
+					} else if (!post.isEmpty()) {
+						Log.w(TAG, "INVALID POST:" + post.toString());
 					}
 				}
 
