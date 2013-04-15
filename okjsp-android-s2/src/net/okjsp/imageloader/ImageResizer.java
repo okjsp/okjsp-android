@@ -29,7 +29,7 @@ import android.util.Log;
  * memory.
  */
 public class ImageResizer extends ImageWorker {
-    private static final String TAG = "ImageWorker";
+    private static final String TAG = "ImageResizer";
     protected int mImageWidth;
     protected int mImageHeight;
 

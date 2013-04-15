@@ -158,7 +158,7 @@ public class MainFragment extends ListFragment {
 						String attr_value = td.getAttributeValue("class");
 						if (!TextUtils.isEmpty(attr_value)) {
 							String value = td.getTextExtractor().toString();
-							Log.d(TAG, "[" + mRecentPostList.size() + "]:" + attr_value + " - " + value);
+							// Log.d(TAG, "[" + mRecentPostList.size() + "]:" + attr_value + " - " + value);
 							if ("ref tiny".equalsIgnoreCase(attr_value)) {
 								try {
 									post.setPostId(Integer.valueOf(value));
@@ -268,7 +268,7 @@ public class MainFragment extends ListFragment {
 			if (!TextUtils.isEmpty(mRecentPostList.get(position).getProfileImageUrl())) {
 				mImageWorker.loadImage(mRecentPostList.get(position).getProfileImageUrl(), holder.iv_profile);
 			} else {
-				holder.iv_profile.setImageResource(-1);
+				holder.iv_profile.setImageResource(0);
 			}
 
 			return rowView;

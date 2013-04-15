@@ -31,7 +31,7 @@ import android.util.Log;
  */
 public class ImageCache {
     private static final String TAG = "ImageCache";
-    private static final boolean DEBUG_LOG = true;
+    private static final boolean DEBUG_LOG = false;
 
     // Default memory cache size
     private static final int DEFAULT_MEM_CACHE_SIZE = 1024 * 1024 * 5; // 5MB
