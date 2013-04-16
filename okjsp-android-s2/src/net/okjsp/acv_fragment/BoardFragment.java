@@ -115,7 +115,7 @@ public class BoardFragment extends ListFragment {
 				String url = "http://okjsp.pe.kr/bbs?act=FIRST_MAIN";
 				if (mUri != null && !"main".equals(mUri.getHost())) {
 					url = "http://www.okjsp.pe.kr/bbs?act=LIST&bbs=" + mUri.getHost();
-					Log.e(TAG, "" + url);
+					// Log.d(TAG, "" + url);
 				}
 				Source source = new Source(new URL(url));
 				source.fullSequentialParse();

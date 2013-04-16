@@ -10,7 +10,6 @@ import net.okjsp.imageloader.ImageResizer;
 import net.okjsp.imageloader.ImageWorker;
 import shared.ui.actionscontentview.ActionsContentView;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -23,6 +22,7 @@ import android.view.View.OnClickListener;
 import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.TextView;
 
 public class MainActivity extends FragmentActivity implements OnClickListener, AdapterView.OnItemClickListener, Const {
 	protected static final String TAG = "MainActivity";
@@ -114,9 +114,19 @@ public class MainActivity extends FragmentActivity implements OnClickListener, A
 	public void onItemClick(AdapterView<?> adapter, View v, int position, long flags) {
         final Uri uri = mActionsAdapter.getItem(position);
         Log.i(TAG, "position:" + position + ", " + uri.toString());
+        updateTitle(mActionsAdapter.getTitle(position));
         updateContent(uri);
         mMenuDrawer.showContent();
 	}
+	
+	@Override
+    public void onBackPressed() {
+		if (mMenuDrawer.isActionsShown()) {
+        	mMenuDrawer.showContent();
+		} else {
+        	super.onBackPressed();
+        }
+    }
 	
     public void onActionsButtonClick(View view) {
         if (mMenuDrawer.isActionsShown())
@@ -124,8 +134,12 @@ public class MainActivity extends FragmentActivity implements OnClickListener, A
         else
         	mMenuDrawer.showActions();
     }
+    
+    protected void updateTitle(String title) {
+    	((TextView)findViewById(R.id.tv_header_title)).setText(title);
+    }
 
-    public void updateContent(Uri uri) {
+    protected void updateContent(Uri uri) {
         final Fragment fragment;
         final String tag;
 
@@ -169,13 +183,9 @@ public class MainActivity extends FragmentActivity implements OnClickListener, A
         if (fragment.isAdded()) {
             tr.show(fragment);
         } else {
-            tr.add(R.id.content, fragment, tag);
+            tr.replace(R.id.content, fragment, tag);
         }
 
-        // 메인을 통해 다른 화면에 같을 경우 백버튼을 누르면 다시 메인에 오도록 변경
-        if (!MainFragment.URI.equals(uri)) {
-            tr.addToBackStack(null);
-        }
         tr.commit();
 
         currentUri = uri;
