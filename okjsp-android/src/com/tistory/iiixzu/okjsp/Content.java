@@ -51,7 +51,7 @@ public class Content extends CommonActivity implements IRequestObserver{
 	private ImageButton 갱신버튼;
 	private boolean isRefresh;
 	
-	private 게시판물아답터 아답터;
+	private ContentAdapter 아답터;
 	private boolean isWritable;
 	private HtmlCleaner xpathParser;
 	
@@ -85,7 +85,7 @@ public class Content extends CommonActivity implements IRequestObserver{
 	        	swipeDetector=new SwipeDetector(this);
 	        }
 	        
-	        아답터=new 게시판물아답터();
+	        아답터=new ContentAdapter();
 	        lv게시물목록.setAdapter(아답터);
 	        xpathParser=new HtmlCleaner();
 	        
@@ -107,7 +107,7 @@ public class Content extends CommonActivity implements IRequestObserver{
 	        	swipeDetector=new SwipeDetector(this);
 	        }
 	        
-	        아답터=new 게시판물아답터();
+	        아답터=new ContentAdapter();
 	        lv게시물목록.setAdapter(아답터);
 	        xpathParser=new HtmlCleaner();
 	        
@@ -780,9 +780,9 @@ public class Content extends CommonActivity implements IRequestObserver{
 	 * 게시판목 아답터..
 	 * @author iiixzu
 	 */
-	public class 게시판물아답터 extends BaseAdapter {
+	public class ContentAdapter extends BaseAdapter {
 			
-        public 게시판물아답터(){
+        public ContentAdapter(){
         	
         }
         

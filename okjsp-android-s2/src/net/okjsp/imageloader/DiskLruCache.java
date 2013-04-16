@@ -47,7 +47,7 @@ import android.util.Log;
  * implementation.
  */
 public class DiskLruCache {
-	private static final boolean DEBUG_LOG = true;
+	private static final boolean DEBUG_LOG = false;
     private static final String TAG = "DiskLruCache";
     private static final String CACHE_FILENAME_PREFIX = "cache_";
     private static final int MAX_REMOVALS = 4;

@@ -158,7 +158,7 @@ public class MainFragment extends ListFragment {
 						String attr_value = td.getAttributeValue("class");
 						if (!TextUtils.isEmpty(attr_value)) {
 							String value = td.getTextExtractor().toString();
-							Log.d(TAG, "[" + mRecentPostList.size() + "]:" + attr_value + " - " + value);
+							// Log.d(TAG, "[" + mRecentPostList.size() + "]:" + attr_value + " - " + value);
 							if ("ref tiny".equalsIgnoreCase(attr_value)) {
 								try {
 									post.setPostId(Integer.valueOf(value));
@@ -187,12 +187,12 @@ public class MainFragment extends ListFragment {
 								if (TextUtils.isEmpty(post.getWriterName())) {
 									post.setWriterName(value);
 								} else {
-									Log.e(TAG, "Writer field is NOT EMPTY!! " + post.getWriterName());
+									Log.w(TAG, "Writer field is NOT EMPTY!! " + post.getWriterName());
 								}
 							} else if ("read tiny".equalsIgnoreCase(attr_value)) {
 								post.setReadCount(Integer.valueOf(value));
 							} else if ("th".equalsIgnoreCase(attr_value)) {
-								Log.e(TAG, value);
+								// Log.e(TAG, value);
 								if ("공지사항".equals(value)) post_type = POST_TYPE_NOTICE;
 								else if ("전체 게시판".equals(value)) post_type = POST_TYPE_RECENT;
 							}
@@ -216,8 +216,8 @@ public class MainFragment extends ListFragment {
 							mRecentPostList.add(post);
 							break;
 						}
-					} else {
-						Log.e(TAG, "INVALID POST:" + post.getTitle());
+					} else if (!post.isEmpty()) {
+						Log.w(TAG, "INVALID POST:" + post.toString());
 					}
 				}
 
@@ -268,7 +268,7 @@ public class MainFragment extends ListFragment {
 			if (!TextUtils.isEmpty(mRecentPostList.get(position).getProfileImageUrl())) {
 				mImageWorker.loadImage(mRecentPostList.get(position).getProfileImageUrl(), holder.iv_profile);
 			} else {
-				holder.iv_profile.setImageResource(-1);
+				holder.iv_profile.setImageResource(0);
 			}
 
 			return rowView;
