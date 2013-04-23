@@ -10,6 +10,7 @@ import java.util.List;
 import net.htmlparser.jericho.Element;
 import net.htmlparser.jericho.HTMLElementName;
 import net.htmlparser.jericho.Source;
+import net.okjsp.Const;
 import net.okjsp.MainActivity;
 import net.okjsp.R;
 import net.okjsp.ViewPostActivity;
@@ -44,8 +45,9 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
-public class BoardFragment extends ListFragment {
+public class BoardFragment extends ListFragment implements Const {
     public static final String TAG = BoardFragment.class.getSimpleName();
+    public static final boolean DEBUG_LOG = false;
     
     protected static final int MSG_PARSE_PAGE_DONE = 1;
     protected static final int ANIMATION_FADEOUT_DURATION = 600;
@@ -73,7 +75,7 @@ public class BoardFragment extends ListFragment {
 
     @Override
     public void onListItemClick(ListView l, View v, int position, long id) {
-        Log.i(TAG, "onListItemClick: " + position + ", " + mPostList.get(position).getPostUrl());
+    	if (DEBUG_LOG) Log.i(TAG, "onListItemClick: " + position + ", " + mPostList.get(position).getPostUrl());
         Intent intent = new Intent(getActivity(), ViewPostActivity.class);
         intent.putExtra("post", mPostList.get(position));
         startActivity(intent);
@@ -83,7 +85,7 @@ public class BoardFragment extends ListFragment {
     public void setUri(Uri uri) {
     	mUri = uri;
     	
-		Log.i(TAG, "getLastPathSegment(): " + mUri.getLastPathSegment() 
+    	if (DEBUG_LOG) Log.i(TAG, "getLastPathSegment(): " + mUri.getLastPathSegment() 
 			   + "\ngetEncodedPath()    : " + mUri.getEncodedPath()
 			   + "\ngetHost()           : " + mUri.getHost());
 		
@@ -112,10 +114,10 @@ public class BoardFragment extends ListFragment {
 		@Override
 		public void run() {
 			try {
-				String url = "http://okjsp.pe.kr/bbs?act=FIRST_MAIN";
+				String url = MAIN_BOARD_URL;
 				if (mUri != null && !"main".equals(mUri.getHost())) {
 					url = "http://www.okjsp.pe.kr/bbs?act=LIST&bbs=" + mUri.getHost();
-					// Log.d(TAG, "" + url);
+					if (DEBUG_LOG) Log.d(TAG, "" + url);
 				}
 				Source source = new Source(new URL(url));
 				source.fullSequentialParse();
@@ -135,7 +137,7 @@ public class BoardFragment extends ListFragment {
 						String attr_value = td.getAttributeValue("class");
 						if (!TextUtils.isEmpty(attr_value)) {
 							String value = td.getTextExtractor().toString();
-							//Log.e(TAG, "[" + i + "]:" + attr_value + " - " + td.getTextExtractor().toString());
+							if (DEBUG_LOG)  Log.e(TAG, "[" + i + "]:" + attr_value + " - " + td.getTextExtractor().toString());
 							if ("ref tiny".equalsIgnoreCase(attr_value)) {
 								try {
 									post.setPostId(Integer.valueOf(value));
@@ -161,7 +163,14 @@ public class BoardFragment extends ListFragment {
 									post.setProfileImageUrl(href.getAttributeValue("src"));
 								}
 							} else if ("writer".equalsIgnoreCase(attr_value)) {
-								post.setWriterName(value);
+								List<Element> el_list = td.getAllElements(HTMLElementName.IMG);
+								if (el_list != null && el_list.size() > 0) {
+									Element href = el_list.get(0);
+									//Log.d(TAG, "     ----" + href.getAttributeValue("src"));
+									post.setProfileImageUrl(href.getAttributeValue("src"));
+								} else {
+									post.setWriterName(value);
+								}
 							} else if ("read tiny".equalsIgnoreCase(attr_value)) {
 								post.setReadCount(Integer.valueOf(value));
 							}
@@ -175,10 +184,10 @@ public class BoardFragment extends ListFragment {
 							}
 						}
 					}
-					mPostList.add(post);
+					if (post.isValid()) mPostList.add(post);
 				}
 
-				Log.d(TAG, "Post Count:" + mPostList.size());
+				if (DEBUG_LOG) Log.d(TAG, "Post Count:" + mPostList.size());
 				/*for(Post p : mPostList) {
 					Log.d(TAG, "--------------------------------------------------");
 					Log.i(TAG, "Post Id    :" + p.getPostId());
@@ -215,6 +224,7 @@ public class BoardFragment extends ListFragment {
 				ViewHolder viewHolder = new ViewHolder();
 				viewHolder.tv_writer = (TextView) rowView.findViewById(R.id.tv_writer);
 				viewHolder.tv_title = (TextView) rowView.findViewById(R.id.tv_title);
+				viewHolder.tv_timestamp = (TextView) rowView.findViewById(R.id.tv_timestamp);
 				viewHolder.iv_profile = (ImageView) rowView.findViewById(R.id.iv_profile);
 				rowView.setTag(viewHolder);
 			}
@@ -222,6 +232,7 @@ public class BoardFragment extends ListFragment {
 			ViewHolder holder = (ViewHolder) rowView.getTag();
 			holder.tv_writer.setText(mPostList.get(position).getWriterName());
 			holder.tv_title.setText(mPostList.get(position).getTitle());
+			holder.tv_timestamp.setText(mPostList.get(position).getTimeStamp());
 			if (!TextUtils.isEmpty(mPostList.get(position).getProfileImageUrl())) {
 				mImageWorker.loadImage(mPostList.get(position).getProfileImageUrl(), holder.iv_profile);
 			}
@@ -232,6 +243,7 @@ public class BoardFragment extends ListFragment {
 		class ViewHolder {
 		    public TextView tv_writer;
 		    public TextView tv_title;
+		    public TextView tv_timestamp;
 		    public ImageView iv_profile;
 		}		
 	}    

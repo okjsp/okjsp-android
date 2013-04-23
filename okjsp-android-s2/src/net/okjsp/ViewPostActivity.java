@@ -28,6 +28,7 @@ import android.widget.BaseAdapter;
 
 public class ViewPostActivity extends ListActivity {
 	protected static final String TAG = "ViewPostActivity";
+	protected static final boolean DEBUG_LOG = false;
 	protected static final int MSG_PARSE_PAGE_DONE = 1;
 	
 	protected Post mPostInfo;
@@ -47,8 +48,9 @@ public class ViewPostActivity extends ListActivity {
         setListAdapter(new PostAdapter());
         
         mPostInfo = getIntent().getExtras().getParcelable("post");
-        Log.d(TAG, "title:" + mPostInfo.getTitle() + ", url:" + mPostInfo.getProfileImageUrl());
+        if (DEBUG_LOG) Log.d(TAG, "title:" + mPostInfo.getTitle() + ", url:" + mPostInfo.getProfileImageUrl());
         mMainThread.start();
+        setTitle(mPostInfo.getTitle());
     }
 	
 	protected String getHtmlBody() {
@@ -144,7 +146,7 @@ public class ViewPostActivity extends ListActivity {
 	            commentData+="</tr>\n";
 	            commentData+="<tr>\n";
 	                commentData+="<td width='30' valign='top'>\n";
-	                    if (!strImage.equals("")) {
+	                    if ("".equals(strImage)) {
 	                    	commentData+="<img src='"+strImage+"'  width='30'/>\n";
 	                    }else {
 	                        commentData+="&nbsp;";
@@ -200,14 +202,14 @@ public class ViewPostActivity extends ListActivity {
 					int end = mPostBody.indexOf("<iframe");
 					mPostBody = mPostBody.substring(start, end);
 					
-					Log.d(TAG, mPostBody);
+					if (DEBUG_LOG) Log.d(TAG, mPostBody);
 				}
 				
 				List<Element> ul_list = table.getAllElements(HTMLElementName.UL);
 				for(Element ul : ul_list) {
 					Comment comment = new Comment();
 					
-					//Log.d(TAG, "[]" + ul.toString());
+					if (DEBUG_LOG)  Log.d(TAG, "[]" + ul.toString());
 					List<Element> li_list = ul.getAllElements(HTMLElementName.LI);
 					for(Element li : li_list) {
 						String attr_value = li.getAttributeValue("class");
@@ -228,13 +230,13 @@ public class ViewPostActivity extends ListActivity {
 							List<Element> a_list = li.getAllElements(HTMLElementName.A);
 							if (a_list != null && a_list.size() > 0) {
 								Element href = a_list.get(0);
-								//Log.e(TAG, "" + href.getAttributeValue("href"));
+								if (DEBUG_LOG) Log.e(TAG, "" + href.getAttributeValue("href"));
 								//comment.setProfileImageUrl(href.getAttributeValue("href"));
 							}
 						}
 					}
 					mCommentList.add(comment);
-					//Log.d(TAG, "" + comment.toString());
+					if (DEBUG_LOG)  Log.d(TAG, "" + comment.toString());
 				}
 				
 				Message.obtain(mHandler, MSG_PARSE_PAGE_DONE).sendToTarget();
@@ -248,7 +250,7 @@ public class ViewPostActivity extends ListActivity {
 	
 	public final class JavaScriptExtention{
 		public void webCommand(final String cmd) {
-			Log.d(TAG, "webCommand(" + cmd + ")");
+			if (DEBUG_LOG) Log.d(TAG, "webCommand(" + cmd + ")");
 			if (cmd.startsWith("DeleteComment")) {
 			}
 		}	  
@@ -284,7 +286,7 @@ public class ViewPostActivity extends ListActivity {
 					webView.addJavascriptInterface(new JavaScriptExtention(), "android");
 					webView.setWebChromeClient(new WebChromeClient() {
 						public void onProgressChanged(WebView view, int progress) {
-							//Log.d(TAG, "onProgressChanged(" + progress + ")");
+							if (DEBUG_LOG) Log.d(TAG, "onProgressChanged(" + progress + ")");
 						}
 					 });
 				} else {

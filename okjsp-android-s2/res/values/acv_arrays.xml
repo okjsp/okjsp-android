@@ -19,6 +19,49 @@
         <item>@null</item>
         
         <item>@null</item>
+
+        <item>@drawable/ic_action_about</item>
+        <item>@drawable/ic_action_about</item>
+        <item>@drawable/ic_action_about</item>
+        <item>@drawable/ic_action_about</item>
+        <item>@drawable/ic_action_about</item>
+        
+        <item>@drawable/ic_action_about</item>
+        <item>@drawable/ic_action_about</item>
+        <item>@drawable/ic_action_about</item>
+        <item>@drawable/ic_action_about</item>
+        <item>@drawable/ic_action_about</item>
+        
+        <item>@drawable/ic_action_about</item>
+        <item>@drawable/ic_action_about</item>
+        <item>@drawable/ic_action_about</item>
+        <item>@drawable/ic_action_about</item>
+        <item>@drawable/ic_action_about</item>
+        
+        <item>@drawable/ic_action_about</item>
+        <item>@drawable/ic_action_about</item>
+        <item>@drawable/ic_action_about</item>
+        <item>@drawable/ic_action_about</item>
+        <item>@drawable/ic_action_about</item>
+
+        <item>@drawable/ic_action_about</item>
+        <item>@drawable/ic_action_about</item>
+        <item>@drawable/ic_action_about</item>
+        <item>@drawable/ic_action_about</item>
+        <item>@drawable/ic_action_about</item>
+        
+        <item>@drawable/ic_action_about</item>
+        <item>@drawable/ic_action_about</item>
+        <item>@drawable/ic_action_about</item>
+        <item>@drawable/ic_action_about</item>
+        <item>@drawable/ic_action_about</item>
+        
+        <item>@drawable/ic_action_about</item>
+        <item>@drawable/ic_action_about</item>
+        <item>@drawable/ic_action_about</item>
+        <item>@drawable/ic_action_about</item>
+        <item>@drawable/ic_action_about</item>
+        
         <item>@drawable/ic_action_about</item>
         <item>@drawable/ic_action_about</item>
         <item>@drawable/ic_action_about</item>
@@ -34,11 +77,54 @@
         <item>Profile</item>
         
         <item>BBS</item>
+        
         <item>책 얘기</item>
         <item>구인/구직</item>
         <item>홍보</item>
         <item>iOS</item>
         <item>Android</item>
+
+        <item>HTML5</item>
+        <item>TECH TREND</item>
+        <item>개발툴</item>
+        <item>개발툴 QnA</item>
+        <item>JavaScript</item>
+        
+        <item>JavaScript QnA</item>
+        <item>사는 얘기</item>
+        <item>얼마면돼</item>
+        <item>토론/기타 QnA</item>
+        <item>뉴스따라잡기</item>
+        
+        <item>강좌</item>
+        <item>싱글의 미학</item>
+        <item>머리식히는 곳</item>
+        <item>DB Tips</item>
+        <item>DB QnA</item>
+
+        <item>JAVA/JSP Tips</item>
+        <item>JAVA/JSP QnA</item>
+        <item>j2ee Tips</item>
+        <item>j2ee QnA</item>
+        <item>맥 정보</item>
+        
+        <item>유용한 정보</item>
+        <item>정부는 개발자를 위해</item>
+        <item>공지사항</item>
+        <item>추천사이트</item>
+        <item>좋은회사</item>
+        
+        <item>장터</item>
+        <item>movie story</item>
+        <item>XML Tips</item>
+        <item>XML QnA</item>
+        <item>소스자료실</item>
+
+        <item>문서자료실</item>
+        <item>기타자료실</item>
+        <item>번역</item>
+        <item>자료실문답</item>
+        <item>프로그램기초스터디</item>
         
         <item>Settings</item>
         <item>설정</item>
@@ -49,11 +135,54 @@
         <item>profile://settings</item>
         
         <item>category://board</item>
+        
         <item>board://book</item>
         <item>board://recruit</item>
         <item>board://pr</item>
         <item>board://iphone</item>
         <item>board://android</item>
+
+        <item>board://html5</item>
+        <item>board://techtrend</item>
+        <item>board://TOOL</item>
+        <item>board://TOOLqna</item>
+        <item>board://ajax</item>
+        
+        <item>board://ajaxqna</item>
+        <item>board://bbs6</item>
+        <item>board://howmuch</item>
+        <item>board://lifeqna</item>
+        <item>board://news</item>
+        
+        <item>board://lecture</item>
+        <item>board://solo</item>
+        <item>board://bbs5</item>
+        <item>board://bbs2</item>
+        <item>board://bbs1</item>
+        
+        <item>board://bbs4</item>
+        <item>board://bbs3</item>
+        <item>board://weblogic</item>
+        <item>board://weblgqna</item>
+        <item>board://mac</item>
+        
+        <item>board://useful</item>
+        <item>board://ihaveadream</item>
+        <item>board://notice</item>
+        <item>board://link</item>
+        <item>board://goodjob</item>
+        
+        <item>board://market</item>
+        <item>board://movie</item>
+        <item>board://xmltip</item>
+        <item>board://xmlqna</item>
+        <item>board://bbs7</item>
+
+        <item>board://docs</item>
+        <item>board://etc</item>
+        <item>board://krtomcat</item>
+        <item>board://okboard</item>
+        <item>board://javastudy</item>
         
         <item>category://settings</item>
         <item>settings://settings</item>

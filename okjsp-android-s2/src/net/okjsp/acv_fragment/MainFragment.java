@@ -258,15 +258,20 @@ public class MainFragment extends ListFragment {
 				ViewHolder viewHolder = new ViewHolder();
 				viewHolder.tv_writer = (TextView) rowView.findViewById(R.id.tv_writer);
 				viewHolder.tv_title = (TextView) rowView.findViewById(R.id.tv_title);
+				viewHolder.tv_timestamp = (TextView) rowView.findViewById(R.id.tv_timestamp);
+				viewHolder.tv_board = (TextView) rowView.findViewById(R.id.tv_board);
 				viewHolder.iv_profile = (ImageView) rowView.findViewById(R.id.iv_profile);
 				rowView.setTag(viewHolder);
 			}
 
+			Post post = mRecentPostList.get(position);
 			ViewHolder holder = (ViewHolder) rowView.getTag();
-			holder.tv_writer.setText(mRecentPostList.get(position).getWriterName());
-			holder.tv_title.setText(mRecentPostList.get(position).getTitle());
-			if (!TextUtils.isEmpty(mRecentPostList.get(position).getProfileImageUrl())) {
-				mImageWorker.loadImage(mRecentPostList.get(position).getProfileImageUrl(), holder.iv_profile);
+			holder.tv_writer.setText(post.getWriterName());
+			holder.tv_title.setText(post.getTitle());
+			holder.tv_timestamp.setText(post.getTimeStamp());
+			holder.tv_board.setText("[" + post.getBoardName() + "]");
+			if (!TextUtils.isEmpty(post.getProfileImageUrl())) {
+				mImageWorker.loadImage(post.getProfileImageUrl(), holder.iv_profile);
 			} else {
 				holder.iv_profile.setImageResource(0);
 			}
@@ -277,6 +282,8 @@ public class MainFragment extends ListFragment {
 		class ViewHolder {
 		    public TextView tv_writer;
 		    public TextView tv_title;
+		    public TextView tv_timestamp;
+		    public TextView tv_board;
 		    public ImageView iv_profile;
 		}		
 	}
