@@ -11,4 +11,9 @@
     <string name="about_play">Play in sandbox</string>
     <string name="about_tutorial">View tutorial page</string>
     
+    <string name="pull_to_refresh_pull_label">Pull to refresh&#8230;</string>
+    <string name="pull_to_refresh_release_label">Release to refresh&#8230;</string>
+    <string name="pull_to_refresh_refreshing_label">Loading&#8230;</string>
+    <string name="pull_to_refresh_tap_label">Tap to refresh&#8230;</string>
+    
 </resources>

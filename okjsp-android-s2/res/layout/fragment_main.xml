@@ -4,11 +4,10 @@
     android:layout_height="match_parent"
     android:background="#000000"
     tools:context=".MainActivity" >
-    <ListView
-        android:id="@android:id/list"
+    <com.handmark.pulltorefresh.PullToRefreshListView
+        android:id="@+id/listview"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
-    </ListView>    
+        android:layout_height="match_parent"/>
     <ImageView
         android:id="@+id/iv_splash"
         android:layout_width="match_parent"

@@ -1,8 +1,6 @@
 package net.okjsp.acv_fragment;
 
 import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,13 +14,7 @@ import net.okjsp.ViewPostActivity;
 import net.okjsp.data.Post;
 import net.okjsp.imageloader.ImageWorker;
 
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.util.EntityUtils;
 
 import android.content.Context;
 import android.content.Intent;
@@ -30,7 +22,8 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.support.v4.app.ListFragment;
+import android.support.v4.app.Fragment;
+import android.support.v4.view.ViewCompat;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -39,12 +32,17 @@ import android.view.ViewGroup;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.animation.Animation.AnimationListener;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
-public class MainFragment extends ListFragment {
+import com.handmark.pulltorefresh.PullToRefreshBase.OnRefreshListener;
+import com.handmark.pulltorefresh.PullToRefreshListView;
+
+public class MainFragment extends Fragment {
     public static final String TAG = MainFragment.class.getSimpleName();
     
     protected static final int MSG_PARSE_PAGE_DONE = 1;
@@ -59,18 +57,67 @@ public class MainFragment extends ListFragment {
 
     protected Uri mUri;
     protected View mView;
+    protected PullToRefreshListView mPtrView;
     protected ArrayList<Post> mNoticeList = new ArrayList<Post>();
     protected ArrayList<Post> mRecentPostList = new ArrayList<Post>();
     protected PostAdapter mPostAdapter;
     protected ImageWorker mImageWorker = MainActivity.getImageWorker();
     protected ParsePageThread mMainThread;
     
+    protected boolean mRunOnce = false;
+    
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
     	mView = inflater.inflate(R.layout.fragment_main, container, false);
-    	
     	mPostAdapter = new PostAdapter(getBaseContext(), R.layout.fragment_main_list_item, mRecentPostList);
-    	setListAdapter(mPostAdapter);
+    	//setListAdapter(mPostAdapter);
+
+    	mPtrView = (PullToRefreshListView)mView.findViewById(R.id.listview);
+		final ListView actualListView = mPtrView.getRefreshableView();
+
+		ViewCompat.setOverScrollMode(actualListView, ViewCompat.OVER_SCROLL_IF_CONTENT_SCROLLS);
+
+		actualListView.setFadingEdgeLength(2);
+		actualListView.setCacheColorHint(0x00000000);
+		actualListView.setDividerHeight(0);
+		actualListView.setLongClickable(true);
+		actualListView.setOnItemClickListener(new OnItemClickListener() {
+			@Override
+			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+			}
+		});
+		actualListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+					@Override
+					public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+						boolean consumed = true;
+						return consumed;
+					}
+				});
+		actualListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+			@Override
+			public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
+				position--; // position start from '1' not '0' at this method because of pulltorefresh header?
+				Log.i(TAG, "onListItemClick: " + position + ", " + mRecentPostList.get(position).getPostUrl());
+		        Intent intent = new Intent(getActivity(), ViewPostActivity.class);
+		        intent.putExtra("post", mRecentPostList.get(position));
+		        startActivity(intent);
+			}
+		});
+
+		mPtrView.setOnRefreshListener(new OnRefreshListener() {
+			@Override
+			public void onRefresh() {
+				mRecentPostList.clear();
+				mMainThread = new ParsePageThread();
+				mMainThread.start();
+			}
+
+			@Override
+			public void onUpdate() {
+
+			}
+		});
+		actualListView.setAdapter(mPostAdapter);
 
 		mRecentPostList.clear();
 		mMainThread = new ParsePageThread();
@@ -79,14 +126,14 @@ public class MainFragment extends ListFragment {
         return mView;
     }
 
-    @Override
+   /* @Override
     public void onListItemClick(ListView l, View v, int position, long id) {
         Log.i(TAG, "onListItemClick: " + position + ", " + mRecentPostList.get(position).getPostUrl());
         Intent intent = new Intent(getActivity(), ViewPostActivity.class);
         intent.putExtra("post", mRecentPostList.get(position));
         startActivity(intent);
         //startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(mRecentPostList.get(position).getPostUrl())));
-    }
+    }*/
     
     public void setUri(Uri uri) {
     	mUri = uri;
@@ -105,6 +152,7 @@ public class MainFragment extends ListFragment {
     	public void handleMessage(Message msg) {
     		switch(msg.what) {
     		case MSG_PARSE_PAGE_DONE:
+    			mPtrView.onRefreshComplete();
     			mPostAdapter.notifyDataSetChanged();
     			Animation fadeOut = new AlphaAnimation(1, 0);
     		    fadeOut.setDuration(ANIMATION_FADEOUT_DURATION);
@@ -122,8 +170,10 @@ public class MainFragment extends ListFragment {
 						mView.findViewById(R.id.iv_splash).setVisibility(View.GONE);
 					}
 				});
-    		    
-   		    	mView.findViewById(R.id.iv_splash).startAnimation(fadeOut);
+    		    if (!mRunOnce) {
+       		    	mView.findViewById(R.id.iv_splash).startAnimation(fadeOut);
+    		    	mRunOnce = true;
+    		    }
     			mMainThread = null;
     			break;
     		}

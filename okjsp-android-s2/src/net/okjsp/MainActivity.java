@@ -9,8 +9,10 @@ import net.okjsp.imageloader.ImageFetcher;
 import net.okjsp.imageloader.ImageResizer;
 import net.okjsp.imageloader.ImageWorker;
 import shared.ui.actionscontentview.ActionsContentView;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
@@ -38,6 +40,8 @@ public class MainActivity extends FragmentActivity implements OnClickListener, A
 	protected String currentContentFragmentTag = null;
 
     protected static ImageResizer mImageWorker;
+    protected boolean mRunOnce = false;
+    protected Handler mHandler = new Handler();
 	
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,6 +49,7 @@ public class MainActivity extends FragmentActivity implements OnClickListener, A
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_main);
+        getPreferences();
         
         // activity runs full screen
         final DisplayMetrics displaymetrics = new DisplayMetrics();
@@ -73,6 +78,13 @@ public class MainActivity extends FragmentActivity implements OnClickListener, A
         }
 
         updateContent(currentUri);
+        
+        // FIXME: test purpose only
+        mRunOnce = false;
+        if (!mRunOnce) {
+            mHandler.postDelayed(mMenuDrawerOpenRunnable, 1000);
+            mRunOnce = true;
+        }
     }
 
     @Override
@@ -91,6 +103,7 @@ public class MainActivity extends FragmentActivity implements OnClickListener, A
     protected void onDestroy() {
         super.onDestroy();
         mActionsAdapter.recycle();
+        savePreferences();
     }
     
     @Override
@@ -195,4 +208,46 @@ public class MainActivity extends FragmentActivity implements OnClickListener, A
     public static ImageWorker getImageWorker() {
         return mImageWorker;
     }
+    
+    protected void getPreferences(){
+        SharedPreferences pref = getSharedPreferences("pref", MODE_PRIVATE);
+        mRunOnce = pref.getBoolean("run_once", false);
+    }
+     
+    protected void savePreferences(){
+        SharedPreferences pref = getSharedPreferences("pref", MODE_PRIVATE);
+        SharedPreferences.Editor editor = pref.edit();
+        editor.putBoolean("run_once", mRunOnce);
+        editor.commit();
+    }
+     
+    protected void removePreferences(){
+        SharedPreferences pref = getSharedPreferences("pref", MODE_PRIVATE);
+        SharedPreferences.Editor editor = pref.edit();
+        editor.remove("run_once");
+        editor.commit();
+    }
+     
+    protected void removeAllPreferences(){
+        SharedPreferences pref = getSharedPreferences("pref", MODE_PRIVATE);
+        SharedPreferences.Editor editor = pref.edit();
+        editor.clear();
+        editor.commit();
+    }
+    
+    protected Runnable mMenuDrawerOpenRunnable = new Runnable() {
+		@Override
+		public void run() {
+			mMenuDrawer.showActions();
+			mHandler.postDelayed(mMenuDrawerCloseRunnable, 2000);
+		}
+    };
+    
+    protected Runnable mMenuDrawerCloseRunnable = new Runnable() {
+		@Override
+		public void run() {
+			mMenuDrawer.showContent();
+		}
+    };
+    
 }
