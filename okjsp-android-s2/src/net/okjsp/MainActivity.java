@@ -4,6 +4,7 @@ import net.okjsp.acv_adapter.ActionsAdapter;
 import net.okjsp.acv_fragment.AboutFragment;
 import net.okjsp.acv_fragment.BoardFragment;
 import net.okjsp.acv_fragment.MainFragment;
+import net.okjsp.data.BoardRank;
 import net.okjsp.imageloader.ImageCache;
 import net.okjsp.imageloader.ImageFetcher;
 import net.okjsp.imageloader.ImageResizer;
@@ -41,7 +42,10 @@ public class MainActivity extends FragmentActivity implements OnClickListener, A
 
     protected static ImageResizer mImageWorker;
     protected boolean mRunOnce = false;
+    protected boolean mShowSplash = true;
     protected Handler mHandler = new Handler();
+    
+    protected BoardRank mBoardRank = new BoardRank();
 	
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,6 +54,9 @@ public class MainActivity extends FragmentActivity implements OnClickListener, A
 
         setContentView(R.layout.activity_main);
         getPreferences();
+        mBoardRank.loadFromFile(getBaseContext());
+        mBoardRank.set("notice", Integer.MAX_VALUE);
+        mBoardRank.set("recent", Integer.MAX_VALUE - 1);
         
         // activity runs full screen
         final DisplayMetrics displaymetrics = new DisplayMetrics();
@@ -66,7 +73,7 @@ public class MainActivity extends FragmentActivity implements OnClickListener, A
         // setup menu drawer
         mMenuDrawer = (ActionsContentView) findViewById(R.id.menu_drawer);
         mActionListView = (ListView) findViewById(R.id.actions);
-        mActionsAdapter = new ActionsAdapter(this);
+        mActionsAdapter = new ActionsAdapter(this, mBoardRank);
         mActionListView.setAdapter(mActionsAdapter);
         mActionListView.setOnItemClickListener(this);
 
@@ -79,8 +86,6 @@ public class MainActivity extends FragmentActivity implements OnClickListener, A
 
         updateContent(currentUri);
         
-        // FIXME: test purpose only
-        mRunOnce = false;
         if (!mRunOnce) {
             mHandler.postDelayed(mMenuDrawerOpenRunnable, 1000);
             mRunOnce = true;
@@ -102,8 +107,9 @@ public class MainActivity extends FragmentActivity implements OnClickListener, A
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        mActionsAdapter.recycle();
         savePreferences();
+        mBoardRank.saveToFile(getBaseContext());
+        mActionsAdapter.recycle();
     }
     
     @Override
@@ -174,13 +180,15 @@ public class MainActivity extends FragmentActivity implements OnClickListener, A
                 fragment = new AboutFragment();
             }
         } else if (MainFragment.URI.equals(uri)) {
-                tag = MainFragment.TAG;
-                final Fragment foundFragment = fm.findFragmentByTag(tag);
-                if (foundFragment != null) {
-                    fragment = foundFragment;
-                } else {
-                    fragment = new MainFragment();
-                }
+            tag = MainFragment.TAG;
+            final Fragment foundFragment = fm.findFragmentByTag(tag);
+            if (foundFragment != null) {
+                fragment = foundFragment;
+            } else {
+                fragment = new MainFragment();
+                ((MainFragment)fragment).setSplash(mShowSplash);
+                mShowSplash = false;
+            }
         } else {
         	Log.i(TAG, "updateContent:" + uri.toString());
             tag = BoardFragment.TAG;
@@ -191,6 +199,7 @@ public class MainActivity extends FragmentActivity implements OnClickListener, A
                 fragment = new BoardFragment();
             }
             ((BoardFragment)fragment).setUri(uri);
+            mBoardRank.add(uri.getHost());
         }
 
         if (fragment.isAdded()) {

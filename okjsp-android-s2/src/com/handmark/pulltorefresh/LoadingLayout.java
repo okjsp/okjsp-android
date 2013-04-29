@@ -15,8 +15,6 @@
  *******************************************************************************/
 package com.handmark.pulltorefresh;
 
-import java.util.Date;
-
 import net.okjsp.R;
 import android.content.Context;
 import android.content.res.TypedArray;
@@ -47,7 +45,7 @@ public class LoadingLayout extends FrameLayout {
 	private String mReleaseLabel;
 
 	private final Animation mRotateAnimation, mResetRotateAnimation;
-
+	
 	public LoadingLayout(Context context, final int mode, String releaseLabel, String pullLabel,
 			String refreshingLabel, TypedArray attrs) {
 		super(context);
@@ -136,7 +134,7 @@ public class LoadingLayout extends FrameLayout {
 	}
 	
 	public void setTimeText(){
-        mHeaderTimeText.setText(new Date(System.currentTimeMillis()).toLocaleString());
+        //mHeaderTimeText.setText(new Date(System.currentTimeMillis()).toLocaleString());
 	}
 
 }

@@ -8,6 +8,7 @@ import java.util.List;
 import net.htmlparser.jericho.Element;
 import net.htmlparser.jericho.HTMLElementName;
 import net.htmlparser.jericho.Source;
+import net.okjsp.Const;
 import net.okjsp.MainActivity;
 import net.okjsp.R;
 import net.okjsp.ViewPostActivity;
@@ -42,7 +43,7 @@ import android.widget.TextView;
 import com.handmark.pulltorefresh.PullToRefreshBase.OnRefreshListener;
 import com.handmark.pulltorefresh.PullToRefreshListView;
 
-public class MainFragment extends Fragment {
+public class MainFragment extends Fragment implements Const {
     public static final String TAG = MainFragment.class.getSimpleName();
     
     protected static final int MSG_PARSE_PAGE_DONE = 1;
@@ -51,8 +52,8 @@ public class MainFragment extends Fragment {
     protected static final int POST_TYPE_NOTICE = 1;
     protected static final int POST_TYPE_RECENT = 2;
     
-    protected static final String SCHEME = "view";
-    protected static final String AUTHORITY = "main";
+    protected static final String SCHEME = "board";
+    protected static final String AUTHORITY = "recent";
     public static final Uri URI = new Uri.Builder().scheme(SCHEME).authority(AUTHORITY).build();
 
     protected Uri mUri;
@@ -64,7 +65,7 @@ public class MainFragment extends Fragment {
     protected ImageWorker mImageWorker = MainActivity.getImageWorker();
     protected ParsePageThread mMainThread;
     
-    protected boolean mRunOnce = false;
+    protected boolean mShowSplash = true;
     
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -72,6 +73,10 @@ public class MainFragment extends Fragment {
     	mPostAdapter = new PostAdapter(getBaseContext(), R.layout.fragment_main_list_item, mRecentPostList);
     	//setListAdapter(mPostAdapter);
 
+    	if (!mShowSplash) {
+    		mView.findViewById(R.id.iv_splash).setVisibility(View.GONE);
+    	}
+    	
     	mPtrView = (PullToRefreshListView)mView.findViewById(R.id.listview);
 		final ListView actualListView = mPtrView.getRefreshableView();
 
@@ -87,12 +92,12 @@ public class MainFragment extends Fragment {
 			}
 		});
 		actualListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-					@Override
-					public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-						boolean consumed = true;
-						return consumed;
-					}
-				});
+			@Override
+			public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+				boolean consumed = true;
+				return consumed;
+			}
+		});
 		actualListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
@@ -144,6 +149,10 @@ public class MainFragment extends Fragment {
 		
     }
     
+    public void setSplash(boolean show) {
+    	mShowSplash = show;
+    }
+    
     protected Context getBaseContext() {
     	return getActivity();
     }
@@ -170,9 +179,10 @@ public class MainFragment extends Fragment {
 						mView.findViewById(R.id.iv_splash).setVisibility(View.GONE);
 					}
 				});
-    		    if (!mRunOnce) {
+    		    
+    		    if (mShowSplash) {
        		    	mView.findViewById(R.id.iv_splash).startAnimation(fadeOut);
-    		    	mRunOnce = true;
+       		    	mShowSplash = false;
     		    }
     			mMainThread = null;
     			break;
@@ -186,7 +196,7 @@ public class MainFragment extends Fragment {
 			int post_type = -1;
 					
 			try {
-				String url = "http://okjsp.pe.kr/bbs?act=FIRST_MAIN";
+				String url = MAIN_BOARD_URL;
 				Source source = new Source(new URL(url));
 				source.fullSequentialParse();
 				
@@ -319,7 +329,11 @@ public class MainFragment extends Fragment {
 			holder.tv_writer.setText(post.getWriterName());
 			holder.tv_title.setText(post.getTitle());
 			holder.tv_timestamp.setText(post.getTimeStamp());
-			holder.tv_board.setText("[" + post.getBoardName() + "]");
+			if (!TextUtils.isEmpty(post.getBoardName())) {
+				holder.tv_board.setText("[" + post.getBoardName() + "]");
+			} else {
+				holder.tv_board.setText("");
+			}
 			if (!TextUtils.isEmpty(post.getProfileImageUrl())) {
 				mImageWorker.loadImage(post.getProfileImageUrl(), holder.iv_profile);
 			} else {

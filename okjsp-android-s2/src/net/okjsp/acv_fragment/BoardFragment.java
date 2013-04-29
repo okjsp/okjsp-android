@@ -65,7 +65,7 @@ public class BoardFragment extends ListFragment implements Const {
     
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-    	mView = inflater.inflate(R.layout.fragment_main, container, false);
+    	mView = inflater.inflate(R.layout.fragment_board, container, false);
     	
     	mPostAdapter = new PostAdapter(getBaseContext(), R.layout.fragment_main_list_item, mPostList);
     	setListAdapter(mPostAdapter);
@@ -102,8 +102,10 @@ public class BoardFragment extends ListFragment implements Const {
     	public void handleMessage(Message msg) {
     		switch(msg.what) {
     		case MSG_PARSE_PAGE_DONE:
-    			mView.findViewById(R.id.iv_splash).setVisibility(View.GONE);
-    			mPostAdapter.notifyDataSetChanged();
+    			//mView.findViewById(R.id.iv_splash).setVisibility(View.GONE);
+    			if (mPostList.size() > 0) {
+        			mPostAdapter.notifyDataSetChanged();
+    			}
     			mMainThread = null;
     			break;
     		}
@@ -116,7 +118,7 @@ public class BoardFragment extends ListFragment implements Const {
 			try {
 				String url = MAIN_BOARD_URL;
 				if (mUri != null && !"main".equals(mUri.getHost())) {
-					url = "http://www.okjsp.pe.kr/bbs?act=LIST&bbs=" + mUri.getHost();
+					url = BBS_BOARD_URL + mUri.getHost();
 					if (DEBUG_LOG) Log.d(TAG, "" + url);
 				}
 				Source source = new Source(new URL(url));
@@ -125,9 +127,6 @@ public class BoardFragment extends ListFragment implements Const {
 				Element table = source.getAllElements(HTMLElementName.TABLE).get(0);
 				List<Element> tr_list = table.getAllElements(HTMLElementName.TR);
 				for(int i = 0; i < tr_list.size(); i++) {
-					// FIXME: after fixing html tag pairing on main page
-					if (i < 3) continue;
-					
 					Post post = new Post();
 					
 					Element tr = tr_list.get(i);
@@ -230,11 +229,14 @@ public class BoardFragment extends ListFragment implements Const {
 			}
 
 			ViewHolder holder = (ViewHolder) rowView.getTag();
-			holder.tv_writer.setText(mPostList.get(position).getWriterName());
-			holder.tv_title.setText(mPostList.get(position).getTitle());
-			holder.tv_timestamp.setText(mPostList.get(position).getTimeStamp());
-			if (!TextUtils.isEmpty(mPostList.get(position).getProfileImageUrl())) {
-				mImageWorker.loadImage(mPostList.get(position).getProfileImageUrl(), holder.iv_profile);
+			if (mPostList.size() > 0) {
+				Post post = mPostList.get(position);
+				holder.tv_writer.setText(post.getWriterName());
+				holder.tv_title.setText(post.getTitle());
+				holder.tv_timestamp.setText(post.getTimeStamp());
+				if (!TextUtils.isEmpty(post.getProfileImageUrl())) {
+					mImageWorker.loadImage(post.getProfileImageUrl(), holder.iv_profile);
+				}
 			}
 
 			return rowView;

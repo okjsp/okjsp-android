@@ -19,7 +19,8 @@
         <item>@null</item>
         
         <item>@null</item>
-
+        <item>@drawable/ic_action_about</item>
+        
         <item>@drawable/ic_action_about</item>
         <item>@drawable/ic_action_about</item>
         <item>@drawable/ic_action_about</item>
@@ -77,6 +78,7 @@
         <item>Profile</item>
         
         <item>BBS</item>
+        <item>최근 게시물</item>
         
         <item>책 얘기</item>
         <item>구인/구직</item>
@@ -135,6 +137,7 @@
         <item>profile://settings</item>
         
         <item>category://board</item>
+        <item>board://recent</item>
         
         <item>board://book</item>
         <item>board://recruit</item>

@@ -16,12 +16,18 @@
 
 package net.okjsp.acv_adapter;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+
 import net.okjsp.R;
+import net.okjsp.data.BoardRank;
 import android.content.Context;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,7 +35,7 @@ import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 public class ActionsAdapter extends BaseAdapter {
-
+	private static final String TAG = "ActionsAdapter";
     private static final int VIEW_TYPE_CATEGORY = 0;
     private static final int VIEW_TYPE_SETTINGS = 1;
     private static final int VIEW_TYPE_SITES = 2;
@@ -41,14 +47,32 @@ public class ActionsAdapter extends BaseAdapter {
     private final String[] mTitles;
     private final String[] mUrls;
     private final TypedArray mIcons;
+    private ArrayList<ActionItem> mActionList = new ArrayList<ActionItem>();
+    private BoardRank mBoardRank;
 
-    public ActionsAdapter(Context context) {
+    public ActionsAdapter(Context context, BoardRank boardRank) {
         mInflater = LayoutInflater.from(context);
+        mBoardRank = boardRank;
 
         final Resources res = context.getResources();
         mTitles = res.getStringArray(R.array.actions_names);
         mUrls = res.getStringArray(R.array.actions_links);
         mIcons = res.obtainTypedArray(R.array.actions_icons);
+        
+        for(int i = 0; i < mTitles.length; i++) {
+        	ActionItem ai = new ActionItem(mTitles[i], mUrls[i], i);
+        	if (ai.uri.getScheme().equals("board")) {
+            	mActionList.add(ai);
+        	}
+        }
+        
+		Collections.sort(mActionList, comparator);
+		
+		int count = 0;
+		for(ActionItem ai : mActionList) {
+			Log.e(TAG, "[" + count++ + "]:" + ai.title + ", " + mBoardRank.getClickCount(ai.uri.getHost()));
+		}
+        
     }
 
     @Override
@@ -58,7 +82,12 @@ public class ActionsAdapter extends BaseAdapter {
 
     @Override
     public Uri getItem(int position) {
-        return Uri.parse(mUrls[position]);
+    	int index = position;
+        if (position >= 2 && position < (mActionList.size() + 2)) {
+        	index = mActionList.get(position - 2).index;
+        } 
+    	
+        return Uri.parse(mUrls[index]);
     }
 
     @Override
@@ -91,14 +120,22 @@ public class ActionsAdapter extends BaseAdapter {
             holder = (ViewHolder) convertView.getTag();
         }
 
-        holder.text.setText(mTitles[position]);
+        if (position >= 2 && position < (mActionList.size() + 2)) {
+        	holder.text.setText(mActionList.get(position - 2).title);
+        } else {
+            holder.text.setText(mTitles[position]);
+        }
         
         switch (type) {
             case VIEW_TYPE_CATEGORY:
             case VIEW_TYPE_PROFILE:
                 break;
             default:
-                final Drawable icon = mIcons.getDrawable(position);
+            	int index = position;
+                if (position >= 2 && position < (mActionList.size() + 2)) {
+                	index = mActionList.get(position - 2).index;
+                } 
+                final Drawable icon = mIcons.getDrawable(index);
                 icon.setBounds(0, 0, icon.getIntrinsicWidth(), icon.getIntrinsicHeight());
                 holder.text.setCompoundDrawables(icon, null, null, null);
                 break;
@@ -130,7 +167,12 @@ public class ActionsAdapter extends BaseAdapter {
     }
     
     public String getTitle(int position) {
-    	return (position >= 0 && position < mTitles.length) ? mTitles[position] : "";
+    	int index = position;
+        if (position >= 2 && position < (mActionList.size() + 2)) {
+        	index = mActionList.get(position - 2).index;
+        } 
+    	
+        return mTitles[index];
     }
     
     public void recycle() {
@@ -139,5 +181,32 @@ public class ActionsAdapter extends BaseAdapter {
 
     protected static class ViewHolder {
         TextView text;
+    }
+    
+	private final Comparator<ActionItem> comparator = new Comparator<ActionItem>() {
+		@Override
+		public int compare(ActionItem obj1, ActionItem obj2) {
+			int result = mBoardRank.getClickCount(obj2.uri.getHost()) - mBoardRank.getClickCount(obj1.uri.getHost());
+			return (result == 0) ? (int)(mBoardRank.getTime(obj2.uri.getHost()) - mBoardRank.getTime(obj1.uri.getHost())) : result;
+		}
+	};	
+
+	public void setBoardRank(BoardRank boardRank) {
+		mBoardRank = boardRank;
+	}
+	
+    protected class ActionItem {
+    	String title;
+    	Uri uri;
+    	int index;
+
+    	public ActionItem() {
+    	}
+    	
+    	public ActionItem(String _title, String url, int _index) {
+    		title = _title;
+    		uri = Uri.parse(url);
+    		index = _index;
+    	}
     }
 }

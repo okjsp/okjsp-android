@@ -51,11 +51,10 @@
                 android:id="@+id/tv_board"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_toLeftOf="@id/tv_timestamp"
-                android:layout_marginRight="5dp"
+                android:layout_toRightOf="@id/tv_writer"
+                android:layout_marginLeft="3dp"
                 android:textSize="12sp"
-                android:singleLine="true"
-                android:visibility="gone"/>
+                android:singleLine="true"/>
         </RelativeLayout>
     </LinearLayout>"
 </LinearLayout>
