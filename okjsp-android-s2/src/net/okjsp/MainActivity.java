@@ -1,9 +1,9 @@
 package net.okjsp;
 
 import net.okjsp.acv_adapter.ActionsAdapter;
-import net.okjsp.acv_fragment.AboutFragment;
 import net.okjsp.acv_fragment.BoardFragment;
 import net.okjsp.acv_fragment.MainFragment;
+import net.okjsp.acv_fragment.ProfileFragment;
 import net.okjsp.data.BoardRank;
 import net.okjsp.imageloader.ImageCache;
 import net.okjsp.imageloader.ImageFetcher;
@@ -74,6 +74,7 @@ public class MainActivity extends FragmentActivity implements OnClickListener, A
         mMenuDrawer = (ActionsContentView) findViewById(R.id.menu_drawer);
         mActionListView = (ListView) findViewById(R.id.actions);
         mActionsAdapter = new ActionsAdapter(this, mBoardRank);
+        mActionsAdapter.setSelected(3);
         mActionListView.setAdapter(mActionsAdapter);
         mActionListView.setOnItemClickListener(this);
 
@@ -133,6 +134,8 @@ public class MainActivity extends FragmentActivity implements OnClickListener, A
 	public void onItemClick(AdapterView<?> adapter, View v, int position, long flags) {
         final Uri uri = mActionsAdapter.getItem(position);
         Log.i(TAG, "position:" + position + ", " + uri.toString());
+        mActionsAdapter.setSelected(position);
+        mActionsAdapter.notifyDataSetChanged();
         updateTitle(mActionsAdapter.getTitle(position));
         updateContent(uri);
         mMenuDrawer.showContent();
@@ -171,15 +174,7 @@ public class MainActivity extends FragmentActivity implements OnClickListener, A
                 tr.hide(currentFragment);
         }
 
-        if (AboutFragment.URI.equals(uri)) {
-            tag = AboutFragment.TAG;
-            final Fragment foundFragment = fm.findFragmentByTag(tag);
-            if (foundFragment != null) {
-                fragment = foundFragment;
-            } else {
-                fragment = new AboutFragment();
-            }
-        } else if (MainFragment.URI.equals(uri)) {
+        if (MainFragment.URI.equals(uri)) {
             tag = MainFragment.TAG;
             final Fragment foundFragment = fm.findFragmentByTag(tag);
             if (foundFragment != null) {
@@ -188,6 +183,14 @@ public class MainActivity extends FragmentActivity implements OnClickListener, A
                 fragment = new MainFragment();
                 ((MainFragment)fragment).setSplash(mShowSplash);
                 mShowSplash = false;
+            }
+        } else if (ProfileFragment.URI.equals(uri)) {
+            tag = ProfileFragment.TAG;
+            final Fragment foundFragment = fm.findFragmentByTag(tag);
+            if (foundFragment != null) {
+                fragment = foundFragment;
+            } else {
+                fragment = new ProfileFragment();
             }
         } else {
         	Log.i(TAG, "updateContent:" + uri.toString());

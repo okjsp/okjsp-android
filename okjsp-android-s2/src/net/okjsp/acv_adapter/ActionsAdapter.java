@@ -25,7 +25,8 @@ import net.okjsp.data.BoardRank;
 import android.content.Context;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
-import android.graphics.drawable.Drawable;
+import android.graphics.Color;
+import android.graphics.Typeface;
 import android.net.Uri;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -35,20 +36,23 @@ import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 public class ActionsAdapter extends BaseAdapter {
-	private static final String TAG = "ActionsAdapter";
-    private static final int VIEW_TYPE_CATEGORY = 0;
-    private static final int VIEW_TYPE_SETTINGS = 1;
-    private static final int VIEW_TYPE_SITES = 2;
-    private static final int VIEW_TYPE_PROFILE = 3;
-    private static final int VIEW_TYPES_COUNT = 4;
+	protected static final String TAG = "ActionsAdapter";
+	protected static final boolean DEBUG_LOG = false;
+	
+	protected static final int VIEW_TYPE_CATEGORY = 0;
+	protected static final int VIEW_TYPE_SETTINGS = 1;
+	protected static final int VIEW_TYPE_SITES = 2;
+	protected static final int VIEW_TYPE_PROFILE = 3;
+	protected static final int VIEW_TYPES_COUNT = 4;
 
-    private final LayoutInflater mInflater;
+	protected final LayoutInflater mInflater;
 
-    private final String[] mTitles;
-    private final String[] mUrls;
-    private final TypedArray mIcons;
-    private ArrayList<ActionItem> mActionList = new ArrayList<ActionItem>();
-    private BoardRank mBoardRank;
+	protected final String[] mTitles;
+	protected final String[] mUrls;
+	protected final TypedArray mIcons;
+	protected ArrayList<ActionItem> mActionList = new ArrayList<ActionItem>();
+	protected BoardRank mBoardRank;
+	protected int mSelected = -1;
 
     public ActionsAdapter(Context context, BoardRank boardRank) {
         mInflater = LayoutInflater.from(context);
@@ -68,11 +72,12 @@ public class ActionsAdapter extends BaseAdapter {
         
 		Collections.sort(mActionList, comparator);
 		
-		int count = 0;
-		for(ActionItem ai : mActionList) {
-			Log.e(TAG, "[" + count++ + "]:" + ai.title + ", " + mBoardRank.getClickCount(ai.uri.getHost()));
+		if (DEBUG_LOG) {
+			int count = 0;
+			for(ActionItem ai : mActionList) {
+				Log.d(TAG, "[" + count++ + "]:" + ai.title + ", " + mBoardRank.getClickCount(ai.uri.getHost()));
+			}
 		}
-        
     }
 
     @Override
@@ -126,6 +131,16 @@ public class ActionsAdapter extends BaseAdapter {
             holder.text.setText(mTitles[position]);
         }
         
+        if (mSelected == position) {
+        	holder.text.setBackgroundColor(Color.YELLOW);
+        	holder.text.setTextColor(Color.BLACK);
+        	holder.text.setTypeface(null, Typeface.BOLD);
+        } else {
+        	holder.text.setBackgroundColor(Color.DKGRAY);
+        	holder.text.setTextColor(Color.WHITE);
+        	holder.text.setTypeface(null, Typeface.NORMAL);
+        }
+        
         switch (type) {
             case VIEW_TYPE_CATEGORY:
             case VIEW_TYPE_PROFILE:
@@ -135,9 +150,9 @@ public class ActionsAdapter extends BaseAdapter {
                 if (position >= 2 && position < (mActionList.size() + 2)) {
                 	index = mActionList.get(position - 2).index;
                 } 
-                final Drawable icon = mIcons.getDrawable(index);
+                /*final Drawable icon = mIcons.getDrawable(index);
                 icon.setBounds(0, 0, icon.getIntrinsicWidth(), icon.getIntrinsicHeight());
-                holder.text.setCompoundDrawables(icon, null, null, null);
+                holder.text.setCompoundDrawables(icon, null, null, null);*/
                 break;
         }
         
@@ -173,6 +188,10 @@ public class ActionsAdapter extends BaseAdapter {
         } 
     	
         return mTitles[index];
+    }
+    
+    public void setSelected(int position) {
+    	mSelected = position;
     }
     
     public void recycle() {

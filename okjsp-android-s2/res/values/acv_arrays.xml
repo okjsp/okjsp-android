@@ -68,9 +68,27 @@
         <item>@drawable/ic_action_about</item>
         <item>@drawable/ic_action_about</item>
         <item>@drawable/ic_action_about</item>
+
+        <item>@drawable/ic_action_about</item>
+        <item>@drawable/ic_action_about</item>
+        <item>@drawable/ic_action_about</item>
+        <item>@drawable/ic_action_about</item>
+        <item>@drawable/ic_action_about</item>
         
-        <item>@null</item>
-        <item>@drawable/ic_action_settings</item>
+        <item>@drawable/ic_action_about</item>
+        <item>@drawable/ic_action_about</item>
+        <item>@drawable/ic_action_about</item>
+        <item>@drawable/ic_action_about</item>
+        <item>@drawable/ic_action_about</item>
+        
+        <item>@drawable/ic_action_about</item>
+        <item>@drawable/ic_action_about</item>
+        <item>@drawable/ic_action_about</item>
+        <item>@drawable/ic_action_about</item>
+        <item>@drawable/ic_action_about</item>
+        
+        <item>@drawable/ic_action_about</item>
+        <item>@drawable/ic_action_about</item>
         <item>@drawable/ic_action_about</item>
     </array>
 
@@ -128,13 +146,25 @@
         <item>자료실문답</item>
         <item>프로그램기초스터디</item>
         
-        <item>Settings</item>
-        <item>설정</item>
-        <item>앱정보</item>
+        <item>스프링 스터디</item>
+        <item>DB스터디</item>
+        <item>english bbs</item>
+        <item>모델2JSP책관련</item>
+        <item>SLF</item>
+
+        <item>Ruby on Rails</item>
+        <item>Ruby on Rails QnA</item>
+        <item>Flex</item>
+        <item>Flex QnA</item>
+        <item>일본사는얘기</item>
+
+        <item>자바패턴1기</item>
+        <item>트위터</item>
+        <item>짬통</item>
     </string-array>
 
     <string-array name="actions_links">
-        <item>profile://settings</item>
+        <item>profile://profile</item>
         
         <item>category://board</item>
         <item>board://recent</item>
@@ -187,9 +217,21 @@
         <item>board://okboard</item>
         <item>board://javastudy</item>
         
-        <item>category://settings</item>
-        <item>settings://settings</item>
-        <item>settings://about</item>
+        <item>board://springstudy</item>
+        <item>board://dbstudy</item>
+        <item>board://engdocs</item>
+        <item>board://model2jsp</item>
+        <item>board://xf</item>
+        
+        <item>board://ruby</item>
+        <item>board://rubyqna</item>
+        <item>board://flex</item>
+        <item>board://flexqna</item>
+        <item>board://japanlife</item>
+        
+        <item>board://ns</item>
+        <item>board://twitter</item>
+        <item>board://trash</item>
     </string-array>
 
     <!-- Settings arrays -->

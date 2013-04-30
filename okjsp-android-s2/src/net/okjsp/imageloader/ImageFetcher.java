@@ -41,8 +41,10 @@ import android.util.Log;
  * A simple subclass of {@link ImageResizer} that fetches and resizes images fetched from a URL.
  */
 public class ImageFetcher extends ImageResizer {
-    private static final String TAG = "ImageFetcher";
-    private static final int HTTP_CACHE_SIZE = 10 * 1024 * 1024; // 10MB
+	protected static final String TAG = "ImageFetcher";
+    protected static final boolean DEBUG_LOG = false;
+    protected static final int HTTP_CACHE_SIZE = 10 * 1024 * 1024; // 10MB
+    
     public static final String HTTP_CACHE_DIR = "http";
 
     /**
@@ -95,7 +97,7 @@ public class ImageFetcher extends ImageResizer {
      * @return The downloaded and resized bitmap
      */
     private Bitmap processBitmap(String data) {
-        if (BuildConfig.DEBUG) {
+        if (BuildConfig.DEBUG && DEBUG_LOG) {
             Log.d(TAG, "processBitmap - " + data);
         }
 
@@ -132,13 +134,13 @@ public class ImageFetcher extends ImageResizer {
         final File cacheFile = new File(cache.createFilePath(urlString));
 
         if (cache.containsKey(urlString)) {
-            if (BuildConfig.DEBUG) {
+            if (BuildConfig.DEBUG && DEBUG_LOG) {
                 Log.d(TAG, "downloadBitmap - found in http cache - " + urlString);
             }
             return cacheFile;
         }
 
-        if (BuildConfig.DEBUG) {
+        if (BuildConfig.DEBUG && DEBUG_LOG) {
             Log.d(TAG, "downloadBitmap - downloading - " + urlString);
         }
 
@@ -149,7 +151,7 @@ public class ImageFetcher extends ImageResizer {
         final HttpGet getRequest = new HttpGet(urlString);
 
         try {
-            Log.e(TAG, "getRequest:" + getRequest.toString());
+            if (DEBUG_LOG) Log.d(TAG, "getRequest:" + getRequest.toString());
             HttpResponse response = client.execute(getRequest);
             final int statusCode = response.getStatusLine().getStatusCode();
             if (statusCode != HttpStatus.SC_OK) {
@@ -173,13 +175,13 @@ public class ImageFetcher extends ImageResizer {
             return cacheFile;
 
         } catch (final IOException e) {
-            Log.e(TAG, "Error in downloadBitmap - " + e);
+            e.printStackTrace();
         } finally {
             if(in != null){
                 try {
                     in.close();
                 } catch (IOException e) {
-                    Log.e(TAG, "Error in inputStream - " + e);
+                    e.printStackTrace();
                 }
                 in = null;
             }
@@ -188,7 +190,7 @@ public class ImageFetcher extends ImageResizer {
                 try {
                     out.close();
                 } catch (final IOException e) {
-                    Log.e(TAG, "Error in downloadBitmap - " + e);
+                    e.printStackTrace();
                 }
             }
         }
