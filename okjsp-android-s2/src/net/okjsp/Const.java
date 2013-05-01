@@ -7,5 +7,6 @@ public interface Const {
 	public static final String MAIN_BOARD_URL = BASE_URL + MAIN_BOARD;
 	public static final String BBS_BOARD_URL = BASE_URL + BBS_BOARD;
 	
+	public static final String BOARD_URI_SCHEME = "board://";
 	public static final String IMAGE_CACHE_DIR = "cache";
 }

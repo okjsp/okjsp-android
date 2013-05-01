@@ -23,8 +23,8 @@ public class OkjspProvider extends ContentProvider implements DbConst {
 
 	// public constants for client development
     public static final String AUTHORITY = "net.okjsp.provider";
-	public static final Uri BOARD_URI = Uri.parse("content://" + AUTHORITY + "/" + Board.CONTENT_PATH);;
-	public static final Uri POST_URI = Uri.parse("content://" + AUTHORITY + "/" + Post.CONTENT_PATH);;
+	public static final Uri BOARD_URI = Uri.parse("content://" + AUTHORITY + "/" + TableBoard.CONTENT_PATH);;
+	public static final Uri POST_URI = Uri.parse("content://" + AUTHORITY + "/" + TablePost.CONTENT_PATH);;
 
 	// helper constants for use with the UriMatcher
     protected static final int BOARD_LIST = 1;
@@ -37,7 +37,7 @@ public class OkjspProvider extends ContentProvider implements DbConst {
 	/**
 	* Column and content type definitions for the Provider.
 	*/
-	public static interface Board extends BaseColumns {
+	public static interface TableBoard extends BaseColumns {
 	    public static final String CONTENT_PATH = "board";
 	    public static final String CONTENT_POSTFIX = "/vnd.net.okjsp.provider";
 	    public static final String CONTENT_TYPE = ContentResolver.CURSOR_DIR_BASE_TYPE + CONTENT_POSTFIX;
@@ -49,7 +49,7 @@ public class OkjspProvider extends ContentProvider implements DbConst {
 	    public static final String SORT_ORDER_DEFAULT = FIELD_CREATED_AT + " ASC";
 	}
 
-	public static interface Post extends BaseColumns {
+	public static interface TablePost extends BaseColumns {
 	    public static final String CONTENT_PATH = "post";
 	    public static final String CONTENT_POSTFIX = "/vnd.net.okjsp.provider";
 	    public static final String CONTENT_TYPE = ContentResolver.CURSOR_DIR_BASE_TYPE + CONTENT_POSTFIX;
@@ -65,10 +65,10 @@ public class OkjspProvider extends ContentProvider implements DbConst {
 	// prepare the UriMatcher
 	static {
         URI_MATCHER = new UriMatcher(UriMatcher.NO_MATCH);
-        URI_MATCHER.addURI(AUTHORITY, Board.CONTENT_PATH, BOARD_LIST);
-        URI_MATCHER.addURI(AUTHORITY, Board.CONTENT_PATH + "/#", BOARD_ID);
-        URI_MATCHER.addURI(AUTHORITY, Post.CONTENT_PATH, POST_LIST);
-        URI_MATCHER.addURI(AUTHORITY, Post.CONTENT_PATH + "/#", POST_ID);
+        URI_MATCHER.addURI(AUTHORITY, TableBoard.CONTENT_PATH, BOARD_LIST);
+        URI_MATCHER.addURI(AUTHORITY, TableBoard.CONTENT_PATH + "/#", BOARD_ID);
+        URI_MATCHER.addURI(AUTHORITY, TablePost.CONTENT_PATH, POST_LIST);
+        URI_MATCHER.addURI(AUTHORITY, TablePost.CONTENT_PATH + "/#", POST_ID);
 	}
 	
 	@Override
@@ -94,13 +94,13 @@ public class OkjspProvider extends ContentProvider implements DbConst {
 	public String getType(Uri uri) {
        switch (URI_MATCHER.match(uri)) {
           case BOARD_LIST:
-             return Board.CONTENT_TYPE;
+             return TableBoard.CONTENT_TYPE;
           case BOARD_ID:
-             return Board.CONTENT_ITEM_TYPE;
+             return TableBoard.CONTENT_ITEM_TYPE;
           case POST_LIST:
-              return Post.CONTENT_TYPE;
+              return TablePost.CONTENT_TYPE;
            case POST_ID:
-              return Post.CONTENT_ITEM_TYPE;
+              return TablePost.CONTENT_ITEM_TYPE;
           default:
              throw new IllegalArgumentException("Unsupported URI: " + uri);
        }

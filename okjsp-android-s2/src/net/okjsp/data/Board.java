@@ -12,7 +12,6 @@ public class Board implements Externalizable {
 	protected String Title;
 	protected String Url;
 	protected Uri    mUri;
-	protected int Index;
 	protected int ClickCount;
 	protected long TimeStamp;
 	
@@ -42,12 +41,6 @@ public class Board implements Externalizable {
 	public Uri getUri() {
 		return mUri;
 	}
-	public int getIndex() {
-		return Index;
-	}
-	public void setIndex(int index) {
-		Index = index;
-	}
 	public int getClickCount() {
 		return ClickCount;
 	}
@@ -64,14 +57,14 @@ public class Board implements Externalizable {
 	public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
 		setTitle(in.readUTF());
 		setUrl(in.readUTF());
-		setIndex(in.readInt());
 		setClickCount(in.readInt());
+		setTimeStamp(in.readLong());
 	}
 	@Override
 	public void writeExternal(ObjectOutput out) throws IOException {
 		out.writeUTF(Title);
 		out.writeUTF(Url);
-		out.writeInt(Index);
 		out.writeInt(ClickCount);
+		out.writeLong(getTimeStamp());
 	}
 }

@@ -1,8 +1,6 @@
 package net.okjsp.data;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 
 import net.okjsp.Const;
 import net.okjsp.R;
@@ -13,7 +11,6 @@ import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.res.Resources;
-import android.content.res.TypedArray;
 import android.database.Cursor;
 import android.net.Uri;
 
@@ -35,14 +32,13 @@ public class BoardManager implements Const, DbConst {
 		
 		if (loadBoardList() < 1) {
 			initBoardList();
-			loadBoardList();
 		}
 		
 		if (DEBUG_LOG) {
-			int count = 0;
+			/*int count = 0;
 			for(Board board : mBoardList) {
-				Log.d("[" + count++ + "]:" + board.getTitle());
-			}
+				Log.d("[" + count++ + "]:" + board.getTitle() + ", " + board.getClickCount());
+			}*/
 		}
 	}
 	
@@ -91,7 +87,7 @@ public class BoardManager implements Const, DbConst {
 	public int loadBoardList() {
 		int count = 0;
         ContentResolver cr = mContext.getContentResolver();
-        Cursor c = cr.query(OkjspProvider.BOARD_URI, OkjspProvider.Board.PROJECTION_ALL, null, null, 
+        Cursor c = cr.query(OkjspProvider.BOARD_URI, OkjspProvider.TableBoard.PROJECTION_ALL, null, null, 
         		FIELD_BOARD_CLICK_COUNT + " DESC"
         		+ ", " + FIELD_BOARD_TIMESTAMP + " DESC"
         		+ ", " + FIELD_BOARD_NAME + " ASC");
@@ -110,6 +106,11 @@ public class BoardManager implements Const, DbConst {
         		Log.d("name:" + c.getString(c.getColumnIndex(FIELD_BOARD_NAME))
         				+ ", clicked:" + c.getInt(c.getColumnIndex(FIELD_BOARD_CLICK_COUNT)));
         	}
+        	Board board = new Board(c.getString(c.getColumnIndex(FIELD_BOARD_DISPLAY_NAME)),
+        			BOARD_URI_SCHEME + c.getString(c.getColumnIndex(FIELD_BOARD_NAME)));
+        	board.setClickCount(c.getInt(c.getColumnIndex(FIELD_BOARD_CLICK_COUNT)));
+        	board.setTimeStamp(c.getLong(c.getColumnIndex(FIELD_BOARD_TIMESTAMP)));
+        	mBoardList.add(board);
         }
         
         c.close();
@@ -122,7 +123,7 @@ public class BoardManager implements Const, DbConst {
 		
         ContentResolver cr = mContext.getContentResolver();
         String where = FIELD_BOARD_NAME + " = '" + board + "'";
-        Cursor c = cr.query(OkjspProvider.BOARD_URI, OkjspProvider.Board.PROJECTION_ALL, 
+        Cursor c = cr.query(OkjspProvider.BOARD_URI, OkjspProvider.TableBoard.PROJECTION_ALL, 
         		where, null, FIELD_BOARD_CLICK_COUNT + " DESC");
 
         long _id;
@@ -145,16 +146,4 @@ public class BoardManager implements Const, DbConst {
         
 		c.close();
 	}
-	
-	private final Comparator<Board> comparator = new Comparator<Board>() {
-		@Override
-		public int compare(Board obj1, Board obj2) {
-			int result = obj1.getClickCount() - obj2.getClickCount();
-			if (result == 0) {
-				result = (int)(obj1.getTimeStamp() - obj2.getTimeStamp());
-			}
-			return (result == 0) ? (obj1.getTitle().compareTo(obj2.getTitle())) : result;
-		}
-	};	
-	
 }

@@ -5,7 +5,6 @@ import net.okjsp.acv_fragment.BoardFragment;
 import net.okjsp.acv_fragment.MainFragment;
 import net.okjsp.acv_fragment.ProfileFragment;
 import net.okjsp.data.BoardManager;
-import net.okjsp.data.BoardRank;
 import net.okjsp.imageloader.ImageCache;
 import net.okjsp.imageloader.ImageFetcher;
 import net.okjsp.imageloader.ImageResizer;
@@ -46,8 +45,6 @@ public class MainActivity extends FragmentActivity implements OnClickListener, A
     protected boolean mShowSplash = true;
     protected Handler mHandler = new Handler();
     
-    protected BoardRank mBoardRank = new BoardRank();
-	
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -55,9 +52,6 @@ public class MainActivity extends FragmentActivity implements OnClickListener, A
 
         setContentView(R.layout.activity_main);
         getPreferences();
-        mBoardRank.loadFromFile(getBaseContext());
-        mBoardRank.set("notice", Integer.MAX_VALUE);
-        mBoardRank.set("recent", Integer.MAX_VALUE - 1);
         
         // activity runs full screen
         final DisplayMetrics displaymetrics = new DisplayMetrics();
@@ -74,7 +68,7 @@ public class MainActivity extends FragmentActivity implements OnClickListener, A
         // setup menu drawer
         mMenuDrawer = (ActionsContentView) findViewById(R.id.menu_drawer);
         mActionListView = (ListView) findViewById(R.id.actions);
-        mActionsAdapter = new ActionsAdapter(this, mBoardRank);
+        mActionsAdapter = new ActionsAdapter(this);
         mActionsAdapter.setSelected(3);
         mActionListView.setAdapter(mActionsAdapter);
         mActionListView.setOnItemClickListener(this);
@@ -110,7 +104,6 @@ public class MainActivity extends FragmentActivity implements OnClickListener, A
     protected void onDestroy() {
         super.onDestroy();
         savePreferences();
-        mBoardRank.saveToFile(getBaseContext());
         mActionsAdapter.recycle();
     }
     
@@ -203,7 +196,6 @@ public class MainActivity extends FragmentActivity implements OnClickListener, A
                 fragment = new BoardFragment();
             }
             ((BoardFragment)fragment).setUri(uri);
-            mBoardRank.add(uri.getHost());
             BoardManager.getInstance(getBaseContext()).onBoadClicked(uri.getHost());
         }
 
