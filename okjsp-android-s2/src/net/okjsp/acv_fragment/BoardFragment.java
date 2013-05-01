@@ -1,8 +1,6 @@
 package net.okjsp.acv_fragment;
 
 import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -10,19 +8,14 @@ import java.util.List;
 import net.htmlparser.jericho.Element;
 import net.htmlparser.jericho.HTMLElementName;
 import net.htmlparser.jericho.Source;
+import net.okjsp.Const;
 import net.okjsp.MainActivity;
 import net.okjsp.R;
 import net.okjsp.ViewPostActivity;
 import net.okjsp.data.Post;
 import net.okjsp.imageloader.ImageWorker;
 
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.util.EntityUtils;
 
 import android.content.Context;
 import android.content.Intent;
@@ -36,16 +29,14 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.AlphaAnimation;
-import android.view.animation.Animation;
-import android.view.animation.Animation.AnimationListener;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
-public class BoardFragment extends ListFragment {
+public class BoardFragment extends ListFragment implements Const {
     public static final String TAG = BoardFragment.class.getSimpleName();
+    public static final boolean DEBUG_LOG = false;
     
     protected static final int MSG_PARSE_PAGE_DONE = 1;
     protected static final int ANIMATION_FADEOUT_DURATION = 600;
@@ -63,7 +54,7 @@ public class BoardFragment extends ListFragment {
     
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-    	mView = inflater.inflate(R.layout.fragment_main, container, false);
+    	mView = inflater.inflate(R.layout.fragment_board, container, false);
     	
     	mPostAdapter = new PostAdapter(getBaseContext(), R.layout.fragment_main_list_item, mPostList);
     	setListAdapter(mPostAdapter);
@@ -73,7 +64,7 @@ public class BoardFragment extends ListFragment {
 
     @Override
     public void onListItemClick(ListView l, View v, int position, long id) {
-        Log.i(TAG, "onListItemClick: " + position + ", " + mPostList.get(position).getPostUrl());
+    	if (DEBUG_LOG) Log.i(TAG, "onListItemClick: " + position + ", " + mPostList.get(position).getUrl());
         Intent intent = new Intent(getActivity(), ViewPostActivity.class);
         intent.putExtra("post", mPostList.get(position));
         startActivity(intent);
@@ -83,7 +74,7 @@ public class BoardFragment extends ListFragment {
     public void setUri(Uri uri) {
     	mUri = uri;
     	
-		Log.i(TAG, "getLastPathSegment(): " + mUri.getLastPathSegment() 
+    	if (DEBUG_LOG) Log.i(TAG, "getLastPathSegment(): " + mUri.getLastPathSegment() 
 			   + "\ngetEncodedPath()    : " + mUri.getEncodedPath()
 			   + "\ngetHost()           : " + mUri.getHost());
 		
@@ -100,8 +91,10 @@ public class BoardFragment extends ListFragment {
     	public void handleMessage(Message msg) {
     		switch(msg.what) {
     		case MSG_PARSE_PAGE_DONE:
-    			mView.findViewById(R.id.iv_splash).setVisibility(View.GONE);
-    			mPostAdapter.notifyDataSetChanged();
+    			//mView.findViewById(R.id.iv_splash).setVisibility(View.GONE);
+    			if (mPostList.size() > 0) {
+        			mPostAdapter.notifyDataSetChanged();
+    			}
     			mMainThread = null;
     			break;
     		}
@@ -112,10 +105,10 @@ public class BoardFragment extends ListFragment {
 		@Override
 		public void run() {
 			try {
-				String url = "http://okjsp.pe.kr/bbs?act=FIRST_MAIN";
+				String url = MAIN_BOARD_URL;
 				if (mUri != null && !"main".equals(mUri.getHost())) {
-					url = "http://www.okjsp.pe.kr/bbs?act=LIST&bbs=" + mUri.getHost();
-					// Log.d(TAG, "" + url);
+					url = BBS_BOARD_URL + mUri.getHost();
+					if (DEBUG_LOG) Log.d(TAG, "" + url);
 				}
 				Source source = new Source(new URL(url));
 				source.fullSequentialParse();
@@ -123,9 +116,6 @@ public class BoardFragment extends ListFragment {
 				Element table = source.getAllElements(HTMLElementName.TABLE).get(0);
 				List<Element> tr_list = table.getAllElements(HTMLElementName.TR);
 				for(int i = 0; i < tr_list.size(); i++) {
-					// FIXME: after fixing html tag pairing on main page
-					if (i < 3) continue;
-					
 					Post post = new Post();
 					
 					Element tr = tr_list.get(i);
@@ -135,12 +125,12 @@ public class BoardFragment extends ListFragment {
 						String attr_value = td.getAttributeValue("class");
 						if (!TextUtils.isEmpty(attr_value)) {
 							String value = td.getTextExtractor().toString();
-							//Log.e(TAG, "[" + i + "]:" + attr_value + " - " + td.getTextExtractor().toString());
+							if (DEBUG_LOG)  Log.e(TAG, "[" + i + "]:" + attr_value + " - " + td.getTextExtractor().toString());
 							if ("ref tiny".equalsIgnoreCase(attr_value)) {
 								try {
-									post.setPostId(Integer.valueOf(value));
+									post.setId(Integer.valueOf(value));
 								} catch (NumberFormatException e) {
-									post.setPostId(-1);
+									post.setId(-1);
 								}
 							} else if ("when tiny".equalsIgnoreCase(attr_value)) {
 								post.setTimeStamp(td.getAttributeValue("title"));
@@ -151,7 +141,7 @@ public class BoardFragment extends ListFragment {
 								if (el_list != null && el_list.size() > 0) {
 									Element href = el_list.get(0);
 									//Log.d(TAG, "     ----" + href.getAttributeValue("href"));
-									post.setPostUrl(href.getAttributeValue("href"));
+									post.setUrl(href.getAttributeValue("href"));
 								}
 							} else if ("id".equalsIgnoreCase(attr_value)) {
 								List<Element> el_list = td.getAllElements(HTMLElementName.IMG);
@@ -161,7 +151,14 @@ public class BoardFragment extends ListFragment {
 									post.setProfileImageUrl(href.getAttributeValue("src"));
 								}
 							} else if ("writer".equalsIgnoreCase(attr_value)) {
-								post.setWriterName(value);
+								List<Element> el_list = td.getAllElements(HTMLElementName.IMG);
+								if (el_list != null && el_list.size() > 0) {
+									Element href = el_list.get(0);
+									//Log.d(TAG, "     ----" + href.getAttributeValue("src"));
+									post.setProfileImageUrl(href.getAttributeValue("src"));
+								} else {
+									post.setWriterName(value);
+								}
 							} else if ("read tiny".equalsIgnoreCase(attr_value)) {
 								post.setReadCount(Integer.valueOf(value));
 							}
@@ -175,10 +172,10 @@ public class BoardFragment extends ListFragment {
 							}
 						}
 					}
-					mPostList.add(post);
+					if (post.isValid()) mPostList.add(post);
 				}
 
-				Log.d(TAG, "Post Count:" + mPostList.size());
+				if (DEBUG_LOG) Log.d(TAG, "Post Count:" + mPostList.size());
 				/*for(Post p : mPostList) {
 					Log.d(TAG, "--------------------------------------------------");
 					Log.i(TAG, "Post Id    :" + p.getPostId());
@@ -215,15 +212,20 @@ public class BoardFragment extends ListFragment {
 				ViewHolder viewHolder = new ViewHolder();
 				viewHolder.tv_writer = (TextView) rowView.findViewById(R.id.tv_writer);
 				viewHolder.tv_title = (TextView) rowView.findViewById(R.id.tv_title);
+				viewHolder.tv_timestamp = (TextView) rowView.findViewById(R.id.tv_timestamp);
 				viewHolder.iv_profile = (ImageView) rowView.findViewById(R.id.iv_profile);
 				rowView.setTag(viewHolder);
 			}
 
 			ViewHolder holder = (ViewHolder) rowView.getTag();
-			holder.tv_writer.setText(mPostList.get(position).getWriterName());
-			holder.tv_title.setText(mPostList.get(position).getTitle());
-			if (!TextUtils.isEmpty(mPostList.get(position).getProfileImageUrl())) {
-				mImageWorker.loadImage(mPostList.get(position).getProfileImageUrl(), holder.iv_profile);
+			if (mPostList.size() > 0) {
+				Post post = mPostList.get(position);
+				holder.tv_writer.setText(post.getWriterName());
+				holder.tv_title.setText(post.getTitle());
+				holder.tv_timestamp.setText(post.getTimeStamp());
+				if (!TextUtils.isEmpty(post.getProfileImageUrl())) {
+					mImageWorker.loadImage(post.getProfileImageUrl(), holder.iv_profile);
+				}
 			}
 
 			return rowView;
@@ -232,6 +234,7 @@ public class BoardFragment extends ListFragment {
 		class ViewHolder {
 		    public TextView tv_writer;
 		    public TextView tv_title;
+		    public TextView tv_timestamp;
 		    public ImageView iv_profile;
 		}		
 	}    

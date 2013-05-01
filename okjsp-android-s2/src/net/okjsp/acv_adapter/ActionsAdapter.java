@@ -16,11 +16,14 @@
 
 package net.okjsp.acv_adapter;
 
+import java.util.ArrayList;
+
 import net.okjsp.R;
+import net.okjsp.data.Board;
+import net.okjsp.data.BoardManager;
 import android.content.Context;
-import android.content.res.Resources;
-import android.content.res.TypedArray;
-import android.graphics.drawable.Drawable;
+import android.graphics.Color;
+import android.graphics.Typeface;
 import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -29,36 +32,33 @@ import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 public class ActionsAdapter extends BaseAdapter {
+	protected static final String TAG = "ActionsAdapter";
+	protected static final boolean DEBUG_LOG = false;
+	
+	protected static final int VIEW_TYPE_CATEGORY = 0;
+	protected static final int VIEW_TYPE_SETTINGS = 1;
+	protected static final int VIEW_TYPE_SITES = 2;
+	protected static final int VIEW_TYPE_PROFILE = 3;
+	protected static final int VIEW_TYPES_COUNT = 4;
 
-    private static final int VIEW_TYPE_CATEGORY = 0;
-    private static final int VIEW_TYPE_SETTINGS = 1;
-    private static final int VIEW_TYPE_SITES = 2;
-    private static final int VIEW_TYPE_PROFILE = 3;
-    private static final int VIEW_TYPES_COUNT = 4;
+	protected final LayoutInflater mInflater;
 
-    private final LayoutInflater mInflater;
-
-    private final String[] mTitles;
-    private final String[] mUrls;
-    private final TypedArray mIcons;
+	protected ArrayList<Board> mActionList;
+	protected int mSelected = -1;
 
     public ActionsAdapter(Context context) {
         mInflater = LayoutInflater.from(context);
-
-        final Resources res = context.getResources();
-        mTitles = res.getStringArray(R.array.actions_names);
-        mUrls = res.getStringArray(R.array.actions_links);
-        mIcons = res.obtainTypedArray(R.array.actions_icons);
+        mActionList = BoardManager.getInstance(context).getBoardList(); 
     }
 
     @Override
     public int getCount() {
-        return mUrls.length;
+        return mActionList.size();
     }
 
     @Override
     public Uri getItem(int position) {
-        return Uri.parse(mUrls[position]);
+        return mActionList.get(position).getUri();
     }
 
     @Override
@@ -91,16 +91,26 @@ public class ActionsAdapter extends BaseAdapter {
             holder = (ViewHolder) convertView.getTag();
         }
 
-        holder.text.setText(mTitles[position]);
+       	holder.text.setText(mActionList.get(position).getTitle());
+        
+        if (mSelected == position) {
+        	holder.text.setBackgroundColor(Color.YELLOW);
+        	holder.text.setTextColor(Color.BLACK);
+        	holder.text.setTypeface(null, Typeface.BOLD);
+        } else {
+        	holder.text.setBackgroundColor(Color.DKGRAY);
+        	holder.text.setTextColor(Color.WHITE);
+        	holder.text.setTypeface(null, Typeface.NORMAL);
+        }
         
         switch (type) {
             case VIEW_TYPE_CATEGORY:
             case VIEW_TYPE_PROFILE:
                 break;
             default:
-                final Drawable icon = mIcons.getDrawable(position);
+                /*final Drawable icon = mIcons.getDrawable(index);
                 icon.setBounds(0, 0, icon.getIntrinsicWidth(), icon.getIntrinsicHeight());
-                holder.text.setCompoundDrawables(icon, null, null, null);
+                holder.text.setCompoundDrawables(icon, null, null, null);*/
                 break;
         }
         
@@ -114,7 +124,7 @@ public class ActionsAdapter extends BaseAdapter {
 
     @Override
     public int getItemViewType(int position) {
-        final Uri uri = Uri.parse(mUrls[position]);
+        final Uri uri = mActionList.get(position).getUri();
         final String scheme = uri.getScheme();
 
         if ("category".equals(scheme)) return VIEW_TYPE_CATEGORY;
@@ -130,14 +140,32 @@ public class ActionsAdapter extends BaseAdapter {
     }
     
     public String getTitle(int position) {
-    	return (position >= 0 && position < mTitles.length) ? mTitles[position] : "";
+        return mActionList.get(position).getTitle();
+    }
+    
+    public void setSelected(int position) {
+    	mSelected = position;
     }
     
     public void recycle() {
-    	if (mIcons != null) mIcons.recycle();
     }
 
     protected static class ViewHolder {
         TextView text;
+    }
+    
+    protected class ActionItem {
+    	String title;
+    	Uri uri;
+    	int index;
+
+    	public ActionItem() {
+    	}
+    	
+    	public ActionItem(String _title, String url, int _index) {
+    		title = _title;
+    		uri = Uri.parse(url);
+    		index = _index;
+    	}
     }
 }
