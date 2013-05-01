@@ -6,9 +6,22 @@
 
     <string name="desc_image_startup">OKJSP 첫 시작 화면</string>
     <string name="desc_image_left_menu">누르면 왼쪽 메뉴가 열립니다</string>
+
+    <!-- Activity Main -->
+    <string name="profile_default_username">로그인 전</string>
+    <string name="profile_default_userinfo">누르면 로그인할 수 있습니다</string>
     
-    <string name="about_details"><b>ActionsContentView</b> is an standalone library implements actions/content swiping view (AKA Side Navigation UI Pattern, AKA Facebook side menu). The library doesn\'t use any specific code introduced in new Android SDK versions. This allows develop an application with an action/content swiping view for every version of Android from 2.2 and up.\n\nThis application shows abilities of the library and allows you to play with some values of ActionsContentView control.</string>
-    <string name="about_play">Play in sandbox</string>
-    <string name="about_tutorial">View tutorial page</string>
+    <!-- Login Dialog -->
+    <string name="login">로그인</string>
+    <string name="username">username</string>
+    <string name="password">password</string>
+    <string name="hint_username">user id</string>
+    <string name="hint_password">password</string>
+    
+    <!-- Pull to refresh strings -->
+    <string name="pull_to_refresh_pull_label">Pull to refresh&#8230;</string>
+    <string name="pull_to_refresh_release_label">Release to refresh&#8230;</string>
+    <string name="pull_to_refresh_refreshing_label">Loading&#8230;</string>
+    <string name="pull_to_refresh_tap_label">Tap to refresh&#8230;</string>
     
 </resources>

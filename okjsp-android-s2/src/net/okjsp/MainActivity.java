@@ -1,16 +1,19 @@
 package net.okjsp;
 
 import net.okjsp.acv_adapter.ActionsAdapter;
-import net.okjsp.acv_fragment.AboutFragment;
 import net.okjsp.acv_fragment.BoardFragment;
 import net.okjsp.acv_fragment.MainFragment;
+import net.okjsp.acv_fragment.ProfileFragment;
+import net.okjsp.data.BoardManager;
 import net.okjsp.imageloader.ImageCache;
 import net.okjsp.imageloader.ImageFetcher;
 import net.okjsp.imageloader.ImageResizer;
 import net.okjsp.imageloader.ImageWorker;
 import shared.ui.actionscontentview.ActionsContentView;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
@@ -38,13 +41,17 @@ public class MainActivity extends FragmentActivity implements OnClickListener, A
 	protected String currentContentFragmentTag = null;
 
     protected static ImageResizer mImageWorker;
-	
+    protected boolean mRunOnce = false;
+    protected boolean mShowSplash = true;
+    protected Handler mHandler = new Handler();
+    
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_main);
+        getPreferences();
         
         // activity runs full screen
         final DisplayMetrics displaymetrics = new DisplayMetrics();
@@ -62,6 +69,7 @@ public class MainActivity extends FragmentActivity implements OnClickListener, A
         mMenuDrawer = (ActionsContentView) findViewById(R.id.menu_drawer);
         mActionListView = (ListView) findViewById(R.id.actions);
         mActionsAdapter = new ActionsAdapter(this);
+        mActionsAdapter.setSelected(3);
         mActionListView.setAdapter(mActionsAdapter);
         mActionListView.setOnItemClickListener(this);
 
@@ -73,6 +81,11 @@ public class MainActivity extends FragmentActivity implements OnClickListener, A
         }
 
         updateContent(currentUri);
+        
+        if (!mRunOnce) {
+            mHandler.postDelayed(mMenuDrawerOpenRunnable, 1000);
+            mRunOnce = true;
+        }
     }
 
     @Override
@@ -90,6 +103,7 @@ public class MainActivity extends FragmentActivity implements OnClickListener, A
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        savePreferences();
         mActionsAdapter.recycle();
     }
     
@@ -114,6 +128,8 @@ public class MainActivity extends FragmentActivity implements OnClickListener, A
 	public void onItemClick(AdapterView<?> adapter, View v, int position, long flags) {
         final Uri uri = mActionsAdapter.getItem(position);
         Log.i(TAG, "position:" + position + ", " + uri.toString());
+        mActionsAdapter.setSelected(position);
+        mActionsAdapter.notifyDataSetChanged();
         updateTitle(mActionsAdapter.getTitle(position));
         updateContent(uri);
         mMenuDrawer.showContent();
@@ -152,22 +168,24 @@ public class MainActivity extends FragmentActivity implements OnClickListener, A
                 tr.hide(currentFragment);
         }
 
-        if (AboutFragment.URI.equals(uri)) {
-            tag = AboutFragment.TAG;
+        if (MainFragment.URI.equals(uri)) {
+            tag = MainFragment.TAG;
             final Fragment foundFragment = fm.findFragmentByTag(tag);
             if (foundFragment != null) {
                 fragment = foundFragment;
             } else {
-                fragment = new AboutFragment();
+                fragment = new MainFragment();
+                ((MainFragment)fragment).setSplash(mShowSplash);
+                mShowSplash = false;
             }
-        } else if (MainFragment.URI.equals(uri)) {
-                tag = MainFragment.TAG;
-                final Fragment foundFragment = fm.findFragmentByTag(tag);
-                if (foundFragment != null) {
-                    fragment = foundFragment;
-                } else {
-                    fragment = new MainFragment();
-                }
+        } else if (ProfileFragment.URI.equals(uri)) {
+            tag = ProfileFragment.TAG;
+            final Fragment foundFragment = fm.findFragmentByTag(tag);
+            if (foundFragment != null) {
+                fragment = foundFragment;
+            } else {
+                fragment = new ProfileFragment();
+            }
         } else {
         	Log.i(TAG, "updateContent:" + uri.toString());
             tag = BoardFragment.TAG;
@@ -178,6 +196,7 @@ public class MainActivity extends FragmentActivity implements OnClickListener, A
                 fragment = new BoardFragment();
             }
             ((BoardFragment)fragment).setUri(uri);
+            BoardManager.getInstance(getBaseContext()).onBoadClicked(uri.getHost());
         }
 
         if (fragment.isAdded()) {
@@ -195,4 +214,46 @@ public class MainActivity extends FragmentActivity implements OnClickListener, A
     public static ImageWorker getImageWorker() {
         return mImageWorker;
     }
+    
+    protected void getPreferences(){
+        SharedPreferences pref = getSharedPreferences("pref", MODE_PRIVATE);
+        mRunOnce = pref.getBoolean("run_once", false);
+    }
+     
+    protected void savePreferences(){
+        SharedPreferences pref = getSharedPreferences("pref", MODE_PRIVATE);
+        SharedPreferences.Editor editor = pref.edit();
+        editor.putBoolean("run_once", mRunOnce);
+        editor.commit();
+    }
+     
+    protected void removePreferences(){
+        SharedPreferences pref = getSharedPreferences("pref", MODE_PRIVATE);
+        SharedPreferences.Editor editor = pref.edit();
+        editor.remove("run_once");
+        editor.commit();
+    }
+     
+    protected void removeAllPreferences(){
+        SharedPreferences pref = getSharedPreferences("pref", MODE_PRIVATE);
+        SharedPreferences.Editor editor = pref.edit();
+        editor.clear();
+        editor.commit();
+    }
+    
+    protected Runnable mMenuDrawerOpenRunnable = new Runnable() {
+		@Override
+		public void run() {
+			mMenuDrawer.showActions();
+			mHandler.postDelayed(mMenuDrawerCloseRunnable, 2000);
+		}
+    };
+    
+    protected Runnable mMenuDrawerCloseRunnable = new Runnable() {
+		@Override
+		public void run() {
+			mMenuDrawer.showContent();
+		}
+    };
+    
 }
