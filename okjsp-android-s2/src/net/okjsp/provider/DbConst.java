@@ -3,31 +3,29 @@ package net.okjsp.provider;
 import android.provider.BaseColumns;
 
 public interface DbConst {
-    public static final String DATABASE_NAME = "track.db";
-    public static final int DATABASE_VERSION = 3;
+    public static final String DATABASE_NAME = "okjsp.db";
+    public static final int DATABASE_VERSION = 1;
     
-    public static final String TABLE_TRACK = "t_track";
-    public static final String TABLE_LOCATION = "t_location";
+    public static final String TABLE_POST = "t_post";
+    public static final String TABLE_BOARD = "t_board";
     
     /* COMMON FIELD */
     public static final String FIELD_CREATED_AT = "created_at";
     public static final String FIELD_UPDATED_AT = "updated_at";
     public static final String FIELD_BASECOLMUNS_ID = BaseColumns._ID;
     public static final String FIELD_SERIAL_NO = "serial_no";
-    
-    /* TRACK */
-    public static final String FIELD_TRACK_ID = "track_id";
-    public static final String FIELD_TRACK_NAME = "track_name";
-    public static final String FIELD_TRACK_ADDRESS = "track_address";
-    public static final String FIELD_DATA_SIZE = "data_size";
 
-    /* LOCATION DATA */
-    public static final String FIELD_LOCATION_ID    = "location_id";
-    public static final String FIELD_LATITUDE       = "latitude";
-    public static final String FIELD_LONGITUDE      = "longitude";
-    public static final String FIELD_ALTITUDE       = "altitude";
-    public static final String FIELD_ACCURAY        = "accuracy";
-    public static final String FIELD_BEARING        = "bearing";
-    public static final String FIELD_TIME           = "time";
-    public static final String FIELD_SPEED          = "speed";
+    /* BOARD */
+    public static final String FIELD_BOARD_NAME = "board_name";
+    public static final String FIELD_BOARD_DISPLAY_NAME = "board_display_name";
+    public static final String FIELD_BOARD_TIMESTAMP = "board_timestamp";
+    public static final String FIELD_BOARD_CLICK_COUNT = "board_click_count";
+    
+    /* POST */
+    public static final String FIELD_POST_ID = "post_id";
+    public static final String FIELD_POST_URL = "post_url";
+    public static final String FIELD_POST_WRITER_NAME = "writer_name";
+    public static final String FIELD_POST_WRITER_PHOTO_URL = "writer_photo_url";
+    public static final String FIELD_POST_READ_COUNT = "read_count";
+    public static final String FIELD_POST_CONTENT = "content";
 }

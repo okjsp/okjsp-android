@@ -1,5 +1,6 @@
 package net.okjsp.provider;
 
+import net.okjsp.util.Log;
 import android.content.ContentProvider;
 import android.content.ContentResolver;
 import android.content.ContentUris;
@@ -12,62 +13,62 @@ import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
 import android.provider.BaseColumns;
 import android.text.TextUtils;
-import android.util.Log;
 
 public class OkjspProvider extends ContentProvider implements DbConst {
 	protected static final String TAG = "OkjspProvider";
+	protected static final boolean DEBUG_LOG = true;
 	
     protected SQLiteDatabase mDb = null;
     protected DbHelper mDbHelper = null;
 
 	// public constants for client development
-    public static final String AUTHORITY = "com.kth.peloton";
-	public static final Uri TRACK_URI = Uri.parse("content://" + AUTHORITY + "/" + Tracks.CONTENT_PATH);;
-    public static final Uri LOCATION_URI = Uri.parse("content://" + AUTHORITY + "/" + Locations.CONTENT_PATH);;
+    public static final String AUTHORITY = "net.okjsp.provider";
+	public static final Uri BOARD_URI = Uri.parse("content://" + AUTHORITY + "/" + Board.CONTENT_PATH);;
+	public static final Uri POST_URI = Uri.parse("content://" + AUTHORITY + "/" + Post.CONTENT_PATH);;
 
 	// helper constants for use with the UriMatcher
-    protected static final int TRACK_LIST = 1;
-    protected static final int TRACK_ID = 2;
-    protected static final int LOCATION_LIST = 3;
-    protected static final int LOCATION_ID = 4;
+    protected static final int BOARD_LIST = 1;
+    protected static final int BOARD_ID = 2;
+    protected static final int POST_LIST = 3;
+    protected static final int POST_ID = 4;
     
     protected static final UriMatcher URI_MATCHER;
 
 	/**
 	* Column and content type definitions for the Provider.
 	*/
-	public static interface Tracks extends BaseColumns {
-	    public static final String CONTENT_PATH = "tracks";
-	    public static final String CONTENT_POSTFIX = "/vnd.com.kth.peloton";
+	public static interface Board extends BaseColumns {
+	    public static final String CONTENT_PATH = "board";
+	    public static final String CONTENT_POSTFIX = "/vnd.net.okjsp.provider";
 	    public static final String CONTENT_TYPE = ContentResolver.CURSOR_DIR_BASE_TYPE + CONTENT_POSTFIX;
 	    public static final String CONTENT_ITEM_TYPE = ContentResolver.CURSOR_ITEM_BASE_TYPE + CONTENT_POSTFIX;
 	    public static final String[] PROJECTION_ALL = { _ID,
-	        FIELD_TRACK_NAME, FIELD_UPDATED_AT, FIELD_CREATED_AT
+	    	FIELD_BOARD_NAME, FIELD_BOARD_DISPLAY_NAME, FIELD_BOARD_CLICK_COUNT, FIELD_BOARD_TIMESTAMP, 
+	    	FIELD_UPDATED_AT, FIELD_CREATED_AT
 	    };
 	    public static final String SORT_ORDER_DEFAULT = FIELD_CREATED_AT + " ASC";
 	}
 
-    /**
-    * Column and content type definitions for the Provider.
-    */
-    public static interface Locations extends BaseColumns {
-        public static final String CONTENT_PATH = "locations";
-        public static final String CONTENT_POSTFIX = "/vnd.com.kth.peloton";
-        public static final String CONTENT_TYPE = ContentResolver.CURSOR_DIR_BASE_TYPE + CONTENT_POSTFIX;
-        public static final String CONTENT_ITEM_TYPE = ContentResolver.CURSOR_ITEM_BASE_TYPE + CONTENT_POSTFIX;
-        public static final String[] PROJECTION_ALL = { _ID,
-            FIELD_TRACK_ID, FIELD_LATITUDE, FIELD_LONGITUDE, FIELD_ALTITUDE, FIELD_ACCURAY, FIELD_UPDATED_AT, FIELD_CREATED_AT
-        };
-        public static final String SORT_ORDER_DEFAULT = FIELD_TRACK_ID + " ASC";
-    }
-	
+	public static interface Post extends BaseColumns {
+	    public static final String CONTENT_PATH = "post";
+	    public static final String CONTENT_POSTFIX = "/vnd.net.okjsp.provider";
+	    public static final String CONTENT_TYPE = ContentResolver.CURSOR_DIR_BASE_TYPE + CONTENT_POSTFIX;
+	    public static final String CONTENT_ITEM_TYPE = ContentResolver.CURSOR_ITEM_BASE_TYPE + CONTENT_POSTFIX;
+	    public static final String[] PROJECTION_ALL = { _ID,
+	    	FIELD_POST_ID, FIELD_BOARD_NAME,
+	    	FIELD_POST_WRITER_NAME, FIELD_POST_WRITER_PHOTO_URL, FIELD_POST_READ_COUNT, FIELD_POST_CONTENT, 
+	    	FIELD_UPDATED_AT, FIELD_CREATED_AT
+	    };
+	    public static final String SORT_ORDER_DEFAULT = FIELD_CREATED_AT + " ASC";
+	}
+
 	// prepare the UriMatcher
 	static {
         URI_MATCHER = new UriMatcher(UriMatcher.NO_MATCH);
-        URI_MATCHER.addURI(AUTHORITY, Tracks.CONTENT_PATH, TRACK_LIST);
-        URI_MATCHER.addURI(AUTHORITY, Tracks.CONTENT_PATH + "/#", TRACK_ID);
-        URI_MATCHER.addURI(AUTHORITY, Locations.CONTENT_PATH, LOCATION_LIST);
-        URI_MATCHER.addURI(AUTHORITY, Locations.CONTENT_PATH + "/#", LOCATION_ID);
+        URI_MATCHER.addURI(AUTHORITY, Board.CONTENT_PATH, BOARD_LIST);
+        URI_MATCHER.addURI(AUTHORITY, Board.CONTENT_PATH + "/#", BOARD_ID);
+        URI_MATCHER.addURI(AUTHORITY, Post.CONTENT_PATH, POST_LIST);
+        URI_MATCHER.addURI(AUTHORITY, Post.CONTENT_PATH + "/#", POST_ID);
 	}
 	
 	@Override
@@ -92,14 +93,14 @@ public class OkjspProvider extends ContentProvider implements DbConst {
 	@Override
 	public String getType(Uri uri) {
        switch (URI_MATCHER.match(uri)) {
-          case TRACK_LIST:
-             return Tracks.CONTENT_TYPE;
-          case TRACK_ID:
-             return Tracks.CONTENT_ITEM_TYPE;
-          case LOCATION_LIST:
-              return Locations.CONTENT_TYPE;
-          case LOCATION_ID:
-              return Locations.CONTENT_ITEM_TYPE;
+          case BOARD_LIST:
+             return Board.CONTENT_TYPE;
+          case BOARD_ID:
+             return Board.CONTENT_ITEM_TYPE;
+          case POST_LIST:
+              return Post.CONTENT_TYPE;
+           case POST_ID:
+              return Post.CONTENT_ITEM_TYPE;
           default:
              throw new IllegalArgumentException("Unsupported URI: " + uri);
        }
@@ -107,14 +108,12 @@ public class OkjspProvider extends ContentProvider implements DbConst {
 
     public String getTableName(Uri uri) {
        switch (URI_MATCHER.match(uri)) {
-          case TRACK_LIST:
-             return TABLE_TRACK;
-          case TRACK_ID:
-             return TABLE_TRACK;
-          case LOCATION_LIST:
-              return TABLE_LOCATION;
-          case LOCATION_ID:
-              return TABLE_LOCATION;
+	       case BOARD_LIST:
+	       case BOARD_ID:
+	          return TABLE_BOARD;
+          case POST_LIST:
+          case POST_ID:
+             return TABLE_POST;
           default:
              throw new IllegalArgumentException("Unsupported URI: " + uri);
        }
@@ -127,19 +126,25 @@ public class OkjspProvider extends ContentProvider implements DbConst {
 	        return null;
 	    }
 	    
-        if (URI_MATCHER.match(uri) != TRACK_LIST && URI_MATCHER.match(uri) != LOCATION_LIST) {
+        if (URI_MATCHER.match(uri) == UriMatcher.NO_MATCH) {
             throw new IllegalArgumentException("Unsupported URI for insertion: " + uri);
         }
         
         long id = mDb.insert(getTableName(uri), null, values);
+        
+        if (DEBUG_LOG) {
+        	Log.d("insert(" + uri.toString() + "): " + id);
+        }
+        
         if (id > 0) {
             // notify all listeners of changes and return itemUri:
             Uri itemUri = ContentUris.withAppendedId(uri, id);
             getContext().getContentResolver().notifyChange(itemUri, null);
             return itemUri;
         }
-	     // s.th. went wrong: 
-	     throw new SQLException("Problem while inserting into " + getTableName(uri) + ", uri: " + uri); // use another exception here!!!
+	    
+        // s.th. went wrong: 
+	    throw new SQLException("Problem while inserting into " + getTableName(uri) + ", uri: " + uri); // use another exception here!!!
 	}
 	
 	@Override
@@ -152,24 +157,32 @@ public class OkjspProvider extends ContentProvider implements DbConst {
 	    int delCount = 0;
 
         switch (URI_MATCHER.match(uri)) {
-            case TRACK_LIST:
-            case LOCATION_LIST:
+            case POST_LIST:
+            case BOARD_LIST:
                 delCount = mDb.delete(getTableName(uri), selection, selectionArgs);
                 break;
                 
-            case TRACK_ID:
-            case LOCATION_ID:
+            case POST_ID:
+            case BOARD_ID:
                 String idStr = uri.getLastPathSegment();
-                String where;
-                if (URI_MATCHER.match(uri) == TRACK_ID) {
-                    where = FIELD_TRACK_ID + " = " + idStr;
+                String where = null;
+                if (getType(uri).equals(POST_ID)) {
+                    where = POST_ID + " = " + idStr;
+                    if (!TextUtils.isEmpty(selection)) {
+                       where += " AND " + selection;
+                    }
+                } else if (getType(uri).equals(BOARD_ID)) {
+                    where = BOARD_ID + " = " + idStr;
+                    if (!TextUtils.isEmpty(selection)) {
+                       where += " AND " + selection;
+                    }
+                }
+                
+                if (where != null) {
+                	delCount = mDb.delete(getTableName(uri), where, selectionArgs);
                 } else {
-                    where = FIELD_LOCATION_ID + " = " + idStr;
+                	Log.e(TAG, "'where' is NULL!!!");
                 }
-                if (!TextUtils.isEmpty(selection)) {
-                   where += " AND " + selection;
-                }
-                delCount = mDb.delete(getTableName(uri), where, selectionArgs);
                 break;
 
             default:
@@ -195,20 +208,20 @@ public class OkjspProvider extends ContentProvider implements DbConst {
 	   builder.setTables(getTableName(uri));
 	   
 	   switch (URI_MATCHER.match(uri)) {
-            case TRACK_LIST:
-            case LOCATION_LIST:
+            case POST_LIST:
+            case BOARD_LIST:
                 // all nice and well
                 break;
-            case TRACK_ID:
-            case LOCATION_ID:
+            case POST_ID:
+            case BOARD_ID:
                 // limit query to one row at most:
                 builder.appendWhere(BaseColumns._ID + " = " + uri.getLastPathSegment());
                 
                 if (TextUtils.isEmpty(sortOrder)) { 
-                    if (URI_MATCHER.match(uri) == TRACK_ID) {
+                    if (URI_MATCHER.match(uri) == POST_ID) {
                         sortOrder = FIELD_CREATED_AT;
                     } else {
-                        sortOrder = FIELD_TRACK_ID;
+                        sortOrder = FIELD_POST_ID;
                     }
                 } 
                 break;
@@ -234,12 +247,12 @@ public class OkjspProvider extends ContentProvider implements DbConst {
 	    int updateCount = 0;
 	    
         switch (URI_MATCHER.match(uri)) {
-            case TRACK_LIST:
-            case LOCATION_LIST:
+            case POST_LIST:
+            case BOARD_LIST:
                 updateCount = mDb.update(getTableName(uri), values, selection, selectionArgs); 
                 break;
-            case TRACK_ID:
-            case LOCATION_ID:
+            case POST_ID:
+            case BOARD_ID:
                 String idStr = uri.getLastPathSegment(); 
                 String where = BaseColumns._ID + " = " + idStr; 
                 if (!TextUtils.isEmpty(selection)) {

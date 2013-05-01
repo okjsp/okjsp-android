@@ -16,107 +16,46 @@ public class DbHelper extends SQLiteOpenHelper implements DbConst {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        db.execSQL(getTableTrackSql_v3());
-        db.execSQL(getTableLocationSql_v3());
+        db.execSQL(getTableBoardSql_v1());
+        db.execSQL(getTablePostSql_v1());
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         Log.d(TAG, "onUpgrade:" + db.getVersion() + ", " + oldVersion + ", " + newVersion);
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_TRACK);
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_LOCATION);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_BOARD);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_POST);
         onCreate(db); 
     }
 
-    protected String getTableTrackSql_v3() {
-        StringBuilder table_track = new StringBuilder();
-        table_track.append("CREATE TABLE ").append(TABLE_TRACK).append(" ( ")
+    protected String getTableBoardSql_v1() {
+        StringBuilder table_post = new StringBuilder();
+        table_post.append("CREATE TABLE ").append(TABLE_BOARD).append(" ( ")
                 .append(BaseColumns._ID).append(" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, ")
-                .append(FIELD_SERIAL_NO).append(" INTEGER, ")
-                .append(FIELD_TRACK_NAME).append(" TEXT, ")
-                .append(FIELD_TRACK_ADDRESS).append(" TEXT, ")
-                .append(FIELD_DATA_SIZE).append(" INTEGER, ")
+                .append(FIELD_BOARD_NAME).append(" TEXT NOT NULL, ")
+                .append(FIELD_BOARD_DISPLAY_NAME).append(" TEXT NOT NULL, ")
+                .append(FIELD_BOARD_CLICK_COUNT).append(" INTEGER, ")
+                .append(FIELD_BOARD_TIMESTAMP).append(" INTEGER, ")
                 .append(FIELD_CREATED_AT).append(" INTEGER, ")
                 .append(FIELD_UPDATED_AT).append(" INTEGER ")
                 .append(");");
-        return table_track.toString();
+        return table_post.toString();
     }
     
-    protected String getTableLocationSql_v3() {
-        StringBuilder table_location = new StringBuilder();
-        table_location.append("CREATE TABLE ").append(TABLE_LOCATION).append(" ( ")
+    protected String getTablePostSql_v1() {
+        StringBuilder table_post = new StringBuilder();
+        table_post.append("CREATE TABLE ").append(TABLE_POST).append(" ( ")
                 .append(BaseColumns._ID).append(" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, ")
-                .append(FIELD_SERIAL_NO).append(" INTEGER, ")
-                .append(FIELD_TRACK_ID).append(" INTEGER NOT NULL, ")
-                .append(FIELD_LATITUDE).append(" REAL, ")
-                .append(FIELD_LONGITUDE).append(" REAL, ")
-                .append(FIELD_ALTITUDE).append(" REAL, ")
-                .append(FIELD_ACCURAY).append(" REAL, ")
-                .append(FIELD_BEARING).append(" REAL, ")
-                .append(FIELD_SPEED).append(" REAL, ")
-                .append(FIELD_TIME).append(" INTEGER, ")
+                .append(FIELD_POST_ID).append(" INTEGER NOT NULL, ")
+                .append(FIELD_POST_URL).append(" TEXT, ")
+                .append(FIELD_BOARD_NAME).append(" TEXT, ")
+                .append(FIELD_POST_WRITER_NAME).append(" TEXT, ")
+                .append(FIELD_POST_WRITER_PHOTO_URL).append(" TEXT, ")
+                .append(FIELD_POST_READ_COUNT).append(" INTEGER, ")
+                .append(FIELD_POST_CONTENT).append(" TEXT, ")
                 .append(FIELD_CREATED_AT).append(" INTEGER, ")
                 .append(FIELD_UPDATED_AT).append(" INTEGER ")
                 .append(");");
-        return table_location.toString();
-    }
-    
-    protected String getTableTrackSql_v2() {
-        StringBuilder table_track = new StringBuilder();
-        table_track.append("CREATE TABLE ").append(TABLE_TRACK).append(" ( ")
-                .append(BaseColumns._ID).append(" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, ")
-                .append(FIELD_TRACK_NAME).append(" TEXT, ")
-                .append(FIELD_TRACK_ADDRESS).append(" TEXT, ")
-                .append(FIELD_DATA_SIZE).append(" INTEGER, ")
-                .append(FIELD_CREATED_AT).append(" INTEGER, ")
-                .append(FIELD_UPDATED_AT).append(" INTEGER ")
-                .append(");");
-        return table_track.toString();
-    }
-    
-    protected String getTableLocationSql_v2() {
-        StringBuilder table_location = new StringBuilder();
-        table_location.append("CREATE TABLE ").append(TABLE_LOCATION).append(" ( ")
-                .append(BaseColumns._ID).append(" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, ")
-                .append(FIELD_TRACK_ID).append(" INTEGER NOT NULL, ")
-                .append(FIELD_LATITUDE).append(" REAL, ")
-                .append(FIELD_LONGITUDE).append(" REAL, ")
-                .append(FIELD_ALTITUDE).append(" REAL, ")
-                .append(FIELD_ACCURAY).append(" REAL, ")
-                .append(FIELD_BEARING).append(" REAL, ")
-                .append(FIELD_SPEED).append(" REAL, ")
-                .append(FIELD_TIME).append(" INTEGER, ")
-                .append(FIELD_CREATED_AT).append(" INTEGER, ")
-                .append(FIELD_UPDATED_AT).append(" INTEGER ")
-                .append(");");
-        return table_location.toString();
-    }
-    
-    protected String getTableTrackSql_v1() {
-        StringBuilder table_track = new StringBuilder();
-        table_track.append("CREATE TABLE ").append(TABLE_TRACK).append(" ( ")
-                .append(BaseColumns._ID).append(" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, ")
-                .append(FIELD_TRACK_NAME).append(" TEXT, ")
-                .append(FIELD_CREATED_AT).append(" INTEGER, ")
-                .append(FIELD_UPDATED_AT).append(" INTEGER ")
-                .append(");");
-        return table_track.toString();
-    }
-    
-    protected String getTableLocationSql_v1() {
-        StringBuilder table_location = new StringBuilder();
-        table_location.append("CREATE TABLE ").append(TABLE_LOCATION).append(" ( ")
-                .append(BaseColumns._ID).append(" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, ")
-                .append(FIELD_TRACK_ID).append(" INTEGER NOT NULL, ")
-                .append(FIELD_LATITUDE).append(" REAL, ")
-                .append(FIELD_LONGITUDE).append(" REAL, ")
-                .append(FIELD_ALTITUDE).append(" REAL, ")
-                .append(FIELD_ACCURAY).append(" REAL, ")
-                .append(FIELD_BEARING).append(" REAL, ")
-                .append(FIELD_SPEED).append(" REAL, ")
-                .append(FIELD_CREATED_AT).append(" INTEGER, ")
-                .append(FIELD_UPDATED_AT).append(" INTEGER ")
-                .append(");");
-        return table_location.toString();
+        return table_post.toString();
     }
 }

@@ -4,6 +4,7 @@ import net.okjsp.acv_adapter.ActionsAdapter;
 import net.okjsp.acv_fragment.BoardFragment;
 import net.okjsp.acv_fragment.MainFragment;
 import net.okjsp.acv_fragment.ProfileFragment;
+import net.okjsp.data.BoardManager;
 import net.okjsp.data.BoardRank;
 import net.okjsp.imageloader.ImageCache;
 import net.okjsp.imageloader.ImageFetcher;
@@ -203,6 +204,7 @@ public class MainActivity extends FragmentActivity implements OnClickListener, A
             }
             ((BoardFragment)fragment).setUri(uri);
             mBoardRank.add(uri.getHost());
+            BoardManager.getInstance(getBaseContext()).onBoadClicked(uri.getHost());
         }
 
         if (fragment.isAdded()) {

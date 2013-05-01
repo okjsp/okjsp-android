@@ -21,6 +21,7 @@ import java.util.Collections;
 import java.util.Comparator;
 
 import net.okjsp.R;
+import net.okjsp.data.BoardManager;
 import net.okjsp.data.BoardRank;
 import android.content.Context;
 import android.content.res.Resources;
@@ -57,7 +58,9 @@ public class ActionsAdapter extends BaseAdapter {
     public ActionsAdapter(Context context, BoardRank boardRank) {
         mInflater = LayoutInflater.from(context);
         mBoardRank = boardRank;
-
+        
+        BoardManager.getInstance(context);
+        
         final Resources res = context.getResources();
         mTitles = res.getStringArray(R.array.actions_names);
         mUrls = res.getStringArray(R.array.actions_links);

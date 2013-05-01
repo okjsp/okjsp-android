@@ -14,11 +14,16 @@ import net.okjsp.R;
 import net.okjsp.ViewPostActivity;
 import net.okjsp.data.Post;
 import net.okjsp.imageloader.ImageWorker;
+import net.okjsp.provider.DbConst;
+import net.okjsp.provider.OkjspProvider;
 
 import org.apache.http.client.ClientProtocolException;
 
+import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -43,7 +48,7 @@ import android.widget.TextView;
 import com.handmark.pulltorefresh.PullToRefreshBase.OnRefreshListener;
 import com.handmark.pulltorefresh.PullToRefreshListView;
 
-public class MainFragment extends Fragment implements Const {
+public class MainFragment extends Fragment implements Const, DbConst {
     public static final String TAG = MainFragment.class.getSimpleName();
     
     protected static final int MSG_PARSE_PAGE_DONE = 1;
@@ -189,6 +194,22 @@ public class MainFragment extends Fragment implements Const {
     		}
     	}
     };
+    
+    protected void savePost() {
+    	ContentResolver cr = getBaseContext().getContentResolver();
+
+    	ContentValues values = new ContentValues();
+        for(Post post : mRecentPostList) {
+            values.clear();
+            values.put(FIELD_POST_ID, post.getPostId());
+            values.put(FIELD_POST_URL, post.getPostUrl());
+            values.put(FIELD_BOARD_NAME, post.getBoardName());
+            values.put(FIELD_BOARD_NAME, post.getBoardName());
+            values.put(FIELD_CREATED_AT, System.currentTimeMillis());
+            values.put(FIELD_UPDATED_AT, System.currentTimeMillis());
+            Uri uri = cr.insert(OkjspProvider.POST_URI, values);
+        }
+    }
     
     protected class ParsePageThread extends Thread {
 		@Override
