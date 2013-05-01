@@ -44,7 +44,7 @@ public class OkjspProvider extends ContentProvider implements DbConst {
 	    public static final String CONTENT_ITEM_TYPE = ContentResolver.CURSOR_ITEM_BASE_TYPE + CONTENT_POSTFIX;
 	    public static final String[] PROJECTION_ALL = { _ID,
 	    	FIELD_BOARD_NAME, FIELD_BOARD_DISPLAY_NAME, FIELD_BOARD_CLICK_COUNT, FIELD_BOARD_TIMESTAMP, 
-	    	FIELD_UPDATED_AT, FIELD_CREATED_AT
+	    	FIELD_BOARD_INDEX, FIELD_UPDATED_AT, FIELD_CREATED_AT
 	    };
 	    public static final String SORT_ORDER_DEFAULT = FIELD_CREATED_AT + " ASC";
 	}
@@ -55,9 +55,9 @@ public class OkjspProvider extends ContentProvider implements DbConst {
 	    public static final String CONTENT_TYPE = ContentResolver.CURSOR_DIR_BASE_TYPE + CONTENT_POSTFIX;
 	    public static final String CONTENT_ITEM_TYPE = ContentResolver.CURSOR_ITEM_BASE_TYPE + CONTENT_POSTFIX;
 	    public static final String[] PROJECTION_ALL = { _ID,
-	    	FIELD_POST_ID, FIELD_BOARD_NAME,
+	    	FIELD_POST_ID, FIELD_BOARD_NAME, FIELD_POST_TITLE, FIELD_POST_URL,
 	    	FIELD_POST_WRITER_NAME, FIELD_POST_WRITER_PHOTO_URL, FIELD_POST_READ_COUNT, FIELD_POST_CONTENT, 
-	    	FIELD_UPDATED_AT, FIELD_CREATED_AT
+	    	FIELD_POST_TIMESTAMP, FIELD_UPDATED_AT, FIELD_CREATED_AT
 	    };
 	    public static final String SORT_ORDER_DEFAULT = FIELD_CREATED_AT + " ASC";
 	}

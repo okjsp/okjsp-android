@@ -36,6 +36,7 @@ public class DbHelper extends SQLiteOpenHelper implements DbConst {
                 .append(FIELD_BOARD_DISPLAY_NAME).append(" TEXT NOT NULL, ")
                 .append(FIELD_BOARD_CLICK_COUNT).append(" INTEGER, ")
                 .append(FIELD_BOARD_TIMESTAMP).append(" INTEGER, ")
+                .append(FIELD_BOARD_INDEX).append(" INTEGER, ")
                 .append(FIELD_CREATED_AT).append(" INTEGER, ")
                 .append(FIELD_UPDATED_AT).append(" INTEGER ")
                 .append(");");
@@ -48,11 +49,13 @@ public class DbHelper extends SQLiteOpenHelper implements DbConst {
                 .append(BaseColumns._ID).append(" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, ")
                 .append(FIELD_POST_ID).append(" INTEGER NOT NULL, ")
                 .append(FIELD_POST_URL).append(" TEXT, ")
+                .append(FIELD_POST_TITLE).append(" TEXT, ")
                 .append(FIELD_BOARD_NAME).append(" TEXT, ")
                 .append(FIELD_POST_WRITER_NAME).append(" TEXT, ")
                 .append(FIELD_POST_WRITER_PHOTO_URL).append(" TEXT, ")
                 .append(FIELD_POST_READ_COUNT).append(" INTEGER, ")
                 .append(FIELD_POST_CONTENT).append(" TEXT, ")
+                .append(FIELD_POST_TIMESTAMP).append(" TEXT, ")
                 .append(FIELD_CREATED_AT).append(" INTEGER, ")
                 .append(FIELD_UPDATED_AT).append(" INTEGER ")
                 .append(");");

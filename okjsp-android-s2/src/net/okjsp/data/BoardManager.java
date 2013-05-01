@@ -7,6 +7,7 @@ import net.okjsp.R;
 import net.okjsp.provider.DbConst;
 import net.okjsp.provider.OkjspProvider;
 import net.okjsp.util.Log;
+import android.app.ProgressDialog;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
@@ -70,6 +71,7 @@ public class BoardManager implements Const, DbConst {
         	Uri uri = Uri.parse(urls[i]);
         	cv.put(FIELD_BOARD_NAME, uri.getHost());
         	cv.put(FIELD_BOARD_DISPLAY_NAME, titles[i]);
+        	cv.put(FIELD_BOARD_INDEX, i);
         	if ("notice".equals(uri.getHost())) {
 	        	cv.put(FIELD_BOARD_CLICK_COUNT, Integer.MAX_VALUE);
         	} else if ("recent".equals(uri.getHost())) {
@@ -90,7 +92,7 @@ public class BoardManager implements Const, DbConst {
         Cursor c = cr.query(OkjspProvider.BOARD_URI, OkjspProvider.TableBoard.PROJECTION_ALL, null, null, 
         		FIELD_BOARD_CLICK_COUNT + " DESC"
         		+ ", " + FIELD_BOARD_TIMESTAMP + " DESC"
-        		+ ", " + FIELD_BOARD_NAME + " ASC");
+        		+ ", " + FIELD_BOARD_INDEX + " ASC");
 
         count = c.getCount();
         if (DEBUG_LOG) {

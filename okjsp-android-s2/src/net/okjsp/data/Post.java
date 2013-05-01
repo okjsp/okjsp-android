@@ -1,30 +1,46 @@
 package net.okjsp.data;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+
 import net.okjsp.Const;
+import net.okjsp.util.Log;
+import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.text.BoringLayout;
 import android.text.TextUtils;
 
 public class Post implements Const, Parcelable {
-	protected int PostId;
+	protected static final boolean DEBUG_LOG = true;
+	
+	protected int Id;
 	protected String BoardName;
 	protected String BoardUrl;
 	protected String Title;
-	protected String PostUrl;
+	protected String Url;
 	protected String WriterName;
 	protected String ProfileImageUrl;
 	protected int ReadCount;
 	protected String TimeStamp;
 	protected boolean IsEmpty = true;;
 	
-	public int getPostId() {
-		return PostId;
+	public int getId() {
+		if (Id < 1 && !TextUtils.isEmpty(Url)) {
+			try {
+				Id = Integer.valueOf(Uri.parse(Url).getLastPathSegment());
+			} catch (NumberFormatException e) {
+				
+			}
+		}
+		
+		return Id;
 	}
 
-	public Post setPostId(int postId) {
+	public Post setId(int postId) {
 		IsEmpty = false;
-		PostId = postId;
+		Id = postId;
 		return this;
 	}
 
@@ -58,13 +74,14 @@ public class Post implements Const, Parcelable {
 		return this;
 	}
 
-	public String getPostUrl() {
-		return TextUtils.isEmpty(PostUrl) ? null : BASE_URL + PostUrl;
+	public String getUrl() {
+		return TextUtils.isEmpty(Url) ? null : 
+			Url.startsWith(BASE_URL) ? Url : (BASE_URL + Url);
 	}
 
-	public Post setPostUrl(String postUrl) {
+	public Post setUrl(String postUrl) {
 		if (!TextUtils.isEmpty(postUrl)) IsEmpty = false;
-		PostUrl = postUrl;
+		Url = postUrl;
 		return this;
 	}
 
@@ -79,7 +96,8 @@ public class Post implements Const, Parcelable {
 	}
 
 	public String getProfileImageUrl() {
-		return TextUtils.isEmpty(ProfileImageUrl) ? null : (BASE_URL + ProfileImageUrl);
+		return TextUtils.isEmpty(ProfileImageUrl) ? null : 
+			Url.startsWith(BASE_URL) ? ProfileImageUrl : (BASE_URL + ProfileImageUrl);
 	}
 
 	public Post setProfileImageUrl(String profileImageUrl) {
@@ -107,6 +125,33 @@ public class Post implements Const, Parcelable {
 		return this;
 	}
 	
+	public long getTime() {
+		long time = 0;
+		
+		if (TextUtils.isEmpty(getTimeStamp())) return 0;
+		else if (getTimeStamp().length() == "2013-04-16 15:46:02.0".length()) {
+			SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd' 'HH:mm:ss'.0'", Locale.getDefault());  
+			try {  
+			    Date date = format.parse(getTimeStamp());  
+			    time = date.getTime(); 
+			    if (DEBUG_LOG) Log.e("Converted Time: " + date.toString());
+			} catch (ParseException e) {  
+			    e.printStackTrace();  
+			}			
+		} else if (getTimeStamp().length() == "2013-04-16 15:46:02".length()) {
+			SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd' 'HH:mm:ss", Locale.getDefault());  
+			try {  
+			    Date date = format.parse(getTimeStamp());  
+			    time = date.getTime(); 
+			    if (DEBUG_LOG) Log.e("Converted Time: " + date.toString());
+			} catch (ParseException e) {  
+			    e.printStackTrace();  
+			}			
+		}
+		
+		return time;
+	}
+	
 	public boolean isEmpty() {
 		return IsEmpty;
 	}
@@ -124,11 +169,11 @@ public class Post implements Const, Parcelable {
 	}
 	
 	public Post(Parcel in){
-		PostId = in.readInt();
+		Id = in.readInt();
 		BoardName = in.readString();
 		BoardUrl = in.readString();
 		Title = in.readString();
-		PostUrl = in.readString();
+		Url = in.readString();
 		WriterName = in.readString();
 		ProfileImageUrl = in.readString();
 		ReadCount = in.readInt();
@@ -141,11 +186,11 @@ public class Post implements Const, Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-    	dest.writeInt(PostId);
+    	dest.writeInt(Id);
     	dest.writeString(BoardName);
     	dest.writeString(BoardUrl);
     	dest.writeString(Title);
-    	dest.writeString(PostUrl);
+    	dest.writeString(Url);
     	dest.writeString(WriterName);
     	dest.writeString(ProfileImageUrl);
     	dest.writeInt(ReadCount);
@@ -167,11 +212,11 @@ public class Post implements Const, Parcelable {
     	
     	result +=   "Writer     : " + getWriterName();
     	result += "\n    ImageUrl   : " + getProfileImageUrl();
-    	result += "\n    Post Id    : " + getPostId();
+    	result += "\n    Post Id    : " + getId();
     	result += "\n    Board Name : " + getBoardName();
     	result += "\n    Board URL  : " + getBoardUrl();
     	result += "\n    Title      : " + getTitle();
-    	result += "\n    Post URL   : " + getPostUrl();
+    	result += "\n    Post URL   : " + getUrl();
     	result += "\n    Read Count : " + getReadCount();
     	result += "\n    Time stamp : " + getTimeStamp();
     	

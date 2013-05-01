@@ -20,12 +20,15 @@ public interface DbConst {
     public static final String FIELD_BOARD_DISPLAY_NAME = "board_display_name";
     public static final String FIELD_BOARD_TIMESTAMP = "board_timestamp";
     public static final String FIELD_BOARD_CLICK_COUNT = "board_click_count";
+    public static final String FIELD_BOARD_INDEX = "board_index";
     
     /* POST */
     public static final String FIELD_POST_ID = "post_id";
     public static final String FIELD_POST_URL = "post_url";
+    public static final String FIELD_POST_TITLE = "post_title";
     public static final String FIELD_POST_WRITER_NAME = "writer_name";
     public static final String FIELD_POST_WRITER_PHOTO_URL = "writer_photo_url";
     public static final String FIELD_POST_READ_COUNT = "read_count";
     public static final String FIELD_POST_CONTENT = "content";
+    public static final String FIELD_POST_TIMESTAMP = "timestamp";
 }

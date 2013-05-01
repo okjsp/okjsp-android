@@ -190,7 +190,7 @@ public class ViewPostActivity extends ListActivity {
 		@Override
 		public void run() {
 			try {
-				Source source = new Source(new URL(mPostInfo.getPostUrl()));
+				Source source = new Source(new URL(mPostInfo.getUrl()));
 				source.fullSequentialParse();
 				
 				Element table = source.getAllElements(HTMLElementName.TABLE).get(0);

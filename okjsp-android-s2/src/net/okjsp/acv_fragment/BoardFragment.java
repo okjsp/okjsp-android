@@ -1,8 +1,6 @@
 package net.okjsp.acv_fragment;
 
 import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -17,13 +15,7 @@ import net.okjsp.ViewPostActivity;
 import net.okjsp.data.Post;
 import net.okjsp.imageloader.ImageWorker;
 
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.util.EntityUtils;
 
 import android.content.Context;
 import android.content.Intent;
@@ -37,9 +29,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.AlphaAnimation;
-import android.view.animation.Animation;
-import android.view.animation.Animation.AnimationListener;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -75,7 +64,7 @@ public class BoardFragment extends ListFragment implements Const {
 
     @Override
     public void onListItemClick(ListView l, View v, int position, long id) {
-    	if (DEBUG_LOG) Log.i(TAG, "onListItemClick: " + position + ", " + mPostList.get(position).getPostUrl());
+    	if (DEBUG_LOG) Log.i(TAG, "onListItemClick: " + position + ", " + mPostList.get(position).getUrl());
         Intent intent = new Intent(getActivity(), ViewPostActivity.class);
         intent.putExtra("post", mPostList.get(position));
         startActivity(intent);
@@ -139,9 +128,9 @@ public class BoardFragment extends ListFragment implements Const {
 							if (DEBUG_LOG)  Log.e(TAG, "[" + i + "]:" + attr_value + " - " + td.getTextExtractor().toString());
 							if ("ref tiny".equalsIgnoreCase(attr_value)) {
 								try {
-									post.setPostId(Integer.valueOf(value));
+									post.setId(Integer.valueOf(value));
 								} catch (NumberFormatException e) {
-									post.setPostId(-1);
+									post.setId(-1);
 								}
 							} else if ("when tiny".equalsIgnoreCase(attr_value)) {
 								post.setTimeStamp(td.getAttributeValue("title"));
@@ -152,7 +141,7 @@ public class BoardFragment extends ListFragment implements Const {
 								if (el_list != null && el_list.size() > 0) {
 									Element href = el_list.get(0);
 									//Log.d(TAG, "     ----" + href.getAttributeValue("href"));
-									post.setPostUrl(href.getAttributeValue("href"));
+									post.setUrl(href.getAttributeValue("href"));
 								}
 							} else if ("id".equalsIgnoreCase(attr_value)) {
 								List<Element> el_list = td.getAllElements(HTMLElementName.IMG);
