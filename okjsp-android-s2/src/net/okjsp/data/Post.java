@@ -24,7 +24,8 @@ public class Post implements Const, Parcelable {
 	protected String ProfileImageUrl;
 	protected int ReadCount;
 	protected String TimeStamp;
-	protected boolean IsEmpty = true;;
+	protected boolean IsEmpty = true;
+	protected boolean IsRead = false;
 	
 	public int getId() {
 		if (Id < 1 && !TextUtils.isEmpty(Url)) {
@@ -150,6 +151,15 @@ public class Post implements Const, Parcelable {
 		}
 		
 		return time;
+	}
+	
+	public Post setAsRead(boolean is_read) {
+		IsRead = is_read;
+		return this;
+	}
+
+	public boolean isRead() {
+		return IsRead;
 	}
 	
 	public boolean isEmpty() {

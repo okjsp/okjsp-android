@@ -21,12 +21,16 @@ import net.okjsp.util.Log;
 
 import org.apache.http.client.ClientProtocolException;
 
+import android.annotation.SuppressLint;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Color;
+import android.graphics.Typeface;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -110,6 +114,9 @@ public class MainFragment extends Fragment implements Const, DbConst {
 			public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
 				position--; // position start from '1' not '0' at this method because of pulltorefresh header?
 				Log.i(TAG, "onListItemClick: " + position + ", " + mRecentPostList.get(position).getUrl());
+				setAsRead(mRecentPostList.get(position).getId());
+				mRecentPostList.get(position).setAsRead(true);
+				mPostAdapter.notifyDataSetChanged();
 		        Intent intent = new Intent(getActivity(), ViewPostActivity.class);
 		        intent.putExtra("post", mRecentPostList.get(position));
 		        startActivity(intent);
@@ -181,6 +188,9 @@ public class MainFragment extends Fragment implements Const, DbConst {
     		post.setWriterName(c.getString(c.getColumnIndex(FIELD_POST_WRITER_NAME)));
     		post.setProfileImageUrl(c.getString(c.getColumnIndex(FIELD_POST_WRITER_PHOTO_URL)));
     		post.setTimeStamp(c.getString(c.getColumnIndex(FIELD_POST_TIMESTAMP)));
+    		post.setReadCount(c.getInt(c.getColumnIndex(FIELD_POST_CLICK_COUNT)));
+    		post.setAsRead(c.getInt(c.getColumnIndex(FIELD_POST_ISREAD)) > 0 ? true : false);
+    		
     		if (DEBUG_LOG) {
     			Log.d("[" + post.getId() + "]: " + post.toString());
     		}
@@ -213,10 +223,11 @@ public class MainFragment extends Fragment implements Const, DbConst {
         } else {
         	
         }
-        values.put(FIELD_POST_READ_COUNT, post.getReadCount());
+        values.put(FIELD_POST_CLICK_COUNT, post.getReadCount());
         values.put(FIELD_POST_WRITER_NAME, post.getWriterName());
         values.put(FIELD_POST_WRITER_PHOTO_URL, post.getProfileImageUrl());
         values.put(FIELD_POST_TIMESTAMP, post.getTimeStamp());
+        values.put(FIELD_POST_ISREAD, post.isRead() ? 1 : 0);
         values.put(FIELD_CREATED_AT, post.getTime());
         values.put(FIELD_UPDATED_AT, System.currentTimeMillis());
         Uri uri = cr.insert(OkjspProvider.POST_URI, values);
@@ -253,6 +264,18 @@ public class MainFragment extends Fragment implements Const, DbConst {
     	
     	c.close();
     	return is_exist;
+    }
+    
+    protected void setAsRead(int post_id) {
+    	ContentResolver cr = getBaseContext().getContentResolver();
+    	String where = FIELD_POST_ID + " = " + post_id;
+    	ContentValues cv = new ContentValues();
+    	cv.put(FIELD_POST_ISREAD, 1);
+    	cr.update(OkjspProvider.POST_URI, cv, where, null);
+    }
+    
+    public boolean checkApiLevel(int level) {
+        return (Build.VERSION.SDK_INT >= level);
     }
     
     protected Handler mHandler = new Handler() {
@@ -410,7 +433,7 @@ public class MainFragment extends Fragment implements Const, DbConst {
 			super(context, textViewResourceId, objects);
 		}
 
-		@Override
+		@SuppressLint("NewApi") @Override
 		public View getView(int position, View convertView, ViewGroup parent) {
 			View rowView = convertView;
 			if (rowView == null) {
@@ -439,6 +462,29 @@ public class MainFragment extends Fragment implements Const, DbConst {
 				mImageWorker.loadImage(post.getProfileImageUrl(), holder.iv_profile);
 			} else {
 				holder.iv_profile.setImageResource(0);
+			}
+			if (post.isRead()) {
+				holder.tv_title.setTextColor(Color.DKGRAY);
+				//holder.tv_title.setTypeface(null, Typeface.NORMAL);
+				holder.tv_writer.setTextColor(Color.DKGRAY);
+				holder.tv_timestamp.setTextColor(Color.DKGRAY);
+				holder.tv_board.setTextColor(Color.DKGRAY);
+				if (checkApiLevel(11)) {
+					holder.iv_profile.setAlpha(0.3f);
+				} else {
+					holder.iv_profile.setAlpha(80);
+				}
+			} else {
+				holder.tv_title.setTextColor(Color.WHITE);
+				//holder.tv_title.setTypeface(null, Typeface.BOLD);
+				holder.tv_writer.setTextColor(Color.LTGRAY);
+				holder.tv_timestamp.setTextColor(Color.LTGRAY);
+				holder.tv_board.setTextColor(Color.LTGRAY);
+				if (checkApiLevel(11)) {
+					holder.iv_profile.setAlpha(1.0f);
+				} else {
+					holder.iv_profile.setAlpha(255);
+				}
 			}
 
 			return rowView;

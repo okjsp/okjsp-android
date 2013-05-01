@@ -53,9 +53,10 @@ public class DbHelper extends SQLiteOpenHelper implements DbConst {
                 .append(FIELD_BOARD_NAME).append(" TEXT, ")
                 .append(FIELD_POST_WRITER_NAME).append(" TEXT, ")
                 .append(FIELD_POST_WRITER_PHOTO_URL).append(" TEXT, ")
-                .append(FIELD_POST_READ_COUNT).append(" INTEGER, ")
+                .append(FIELD_POST_CLICK_COUNT).append(" INTEGER, ")
                 .append(FIELD_POST_CONTENT).append(" TEXT, ")
                 .append(FIELD_POST_TIMESTAMP).append(" TEXT, ")
+                .append(FIELD_POST_ISREAD).append(" INTEGER, ")
                 .append(FIELD_CREATED_AT).append(" INTEGER, ")
                 .append(FIELD_UPDATED_AT).append(" INTEGER ")
                 .append(");");

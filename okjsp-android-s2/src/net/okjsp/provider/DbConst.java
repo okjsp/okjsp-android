@@ -28,7 +28,8 @@ public interface DbConst {
     public static final String FIELD_POST_TITLE = "post_title";
     public static final String FIELD_POST_WRITER_NAME = "writer_name";
     public static final String FIELD_POST_WRITER_PHOTO_URL = "writer_photo_url";
-    public static final String FIELD_POST_READ_COUNT = "read_count";
+    public static final String FIELD_POST_CLICK_COUNT = "click_count";
     public static final String FIELD_POST_CONTENT = "content";
     public static final String FIELD_POST_TIMESTAMP = "timestamp";
+    public static final String FIELD_POST_ISREAD = "is_read";
 }
