@@ -28,7 +28,7 @@
 	        android:id="@+id/iv_profile"
 	        android:layout_width="wrap_content"
 	        android:layout_height="wrap_content"
-	        android:src="@drawable/ic_launcher" />
+	        android:src="@drawable/social_person" />
 	
 	    <LinearLayout
 	        android:id="@+id/layout_name"

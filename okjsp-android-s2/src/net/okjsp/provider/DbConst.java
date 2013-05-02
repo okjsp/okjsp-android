@@ -4,7 +4,7 @@ import android.provider.BaseColumns;
 
 public interface DbConst {
     public static final String DATABASE_NAME = "okjsp.db";
-    public static final int DATABASE_VERSION = 1;
+    public static final int DATABASE_VERSION = 2;
     
     public static final String TABLE_POST = "t_post";
     public static final String TABLE_BOARD = "t_board";
@@ -16,11 +16,12 @@ public interface DbConst {
     public static final String FIELD_SERIAL_NO = "serial_no";
 
     /* BOARD */
-    public static final String FIELD_BOARD_NAME = "board_name";
+    public static final String FIELD_BOARD_URI_HOST = "board_uri_host";
     public static final String FIELD_BOARD_DISPLAY_NAME = "board_display_name";
     public static final String FIELD_BOARD_TIMESTAMP = "board_timestamp";
     public static final String FIELD_BOARD_CLICK_COUNT = "board_click_count";
-    public static final String FIELD_BOARD_INDEX = "board_index";
+    public static final String FIELD_BOARD_INDEX = "board_index"; // pre-defined serial index
+    public static final String FIELD_BOARD_MONITORING = "is_monitoring";
     
     /* POST */
     public static final String FIELD_POST_ID = "post_id";
@@ -32,4 +33,5 @@ public interface DbConst {
     public static final String FIELD_POST_CONTENT = "content";
     public static final String FIELD_POST_TIMESTAMP = "timestamp";
     public static final String FIELD_POST_ISREAD = "is_read";
+    public static final String FIELD_POST_COMMENT_COUNT = "comment_count";
 }

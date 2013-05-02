@@ -3,7 +3,6 @@ package net.okjsp.acv_fragment;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import net.htmlparser.jericho.Element;
@@ -18,7 +17,6 @@ import net.okjsp.imageloader.ImageWorker;
 import net.okjsp.provider.DbConst;
 import net.okjsp.provider.OkjspProvider;
 import net.okjsp.util.Log;
-import net.okjsp.widget.actionbar.ActionBarHelper;
 
 import org.apache.http.client.ClientProtocolException;
 
@@ -29,7 +27,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Color;
-import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -38,7 +35,10 @@ import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewCompat;
 import android.text.TextUtils;
+import android.view.ContextMenu;
 import android.view.LayoutInflater;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AlphaAnimation;
@@ -95,30 +95,28 @@ public class MainFragment extends Fragment implements Const, DbConst {
 
 		ViewCompat.setOverScrollMode(actualListView, ViewCompat.OVER_SCROLL_IF_CONTENT_SCROLLS);
 
+		registerForContextMenu(actualListView);
 		actualListView.setFadingEdgeLength(2);
 		actualListView.setCacheColorHint(0x00000000);
 		actualListView.setDividerHeight(0);
 		actualListView.setLongClickable(true);
-		actualListView.setOnItemClickListener(new OnItemClickListener() {
-			@Override
-			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-			}
-		});
-		actualListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+		/*actualListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
 			@Override
 			public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
 				boolean consumed = true;
 				return consumed;
 			}
-		});
+		});*/
 		actualListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
 				position--; // position start from '1' not '0' at this method because of pulltorefresh header?
-				Log.i(TAG, "onListItemClick: " + position + ", " + mRecentPostList.get(position).getUrl());
+				if (DEBUG_LOG) Log.i(TAG, "onListItemClick: " + position + ", " + mRecentPostList.get(position).getUrl());
+				
 				setAsRead(mRecentPostList.get(position).getId());
 				mRecentPostList.get(position).setAsRead(true);
 				mPostAdapter.notifyDataSetChanged();
+				
 		        Intent intent = new Intent(getActivity(), ViewPostActivity.class);
 		        intent.putExtra("post", mRecentPostList.get(position));
 		        startActivity(intent);
@@ -128,7 +126,6 @@ public class MainFragment extends Fragment implements Const, DbConst {
 		mPtrView.setOnRefreshListener(new OnRefreshListener() {
 			@Override
 			public void onRefresh() {
-				mRecentPostList.clear();
 				mMainThread = new ParsePageThread();
 				mMainThread.start();
 			}
@@ -147,16 +144,30 @@ public class MainFragment extends Fragment implements Const, DbConst {
     	
         return mView;
     }
-
-   /* @Override
-    public void onListItemClick(ListView l, View v, int position, long id) {
-        Log.i(TAG, "onListItemClick: " + position + ", " + mRecentPostList.get(position).getPostUrl());
-        Intent intent = new Intent(getActivity(), ViewPostActivity.class);
-        intent.putExtra("post", mRecentPostList.get(position));
-        startActivity(intent);
-        //startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(mRecentPostList.get(position).getPostUrl())));
-    }*/
     
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View view, ContextMenu.ContextMenuInfo menuinfo) {
+        MenuInflater menuInflater = getActivity().getMenuInflater();
+        menuInflater.inflate(R.menu.context_menu_post, menu);
+        menu.setHeaderTitle("Select");
+    }
+    
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+		AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
+		;
+		switch (item.getItemId()) {
+		case R.id.action_share:
+			Intent i=new Intent(android.content.Intent.ACTION_SEND);
+			i.setType("text/plain");
+			i.putExtra(Intent.EXTRA_SUBJECT, mRecentPostList.get(info.position).getTitle());
+			i.putExtra(Intent.EXTRA_TEXT, mRecentPostList.get(info.position).getUrl());
+			startActivity(Intent.createChooser(i, getBaseContext().getString(R.string.action_share)));
+			return true;
+		}
+		return false;
+    }    
+
     public void setUri(Uri uri) {
     	mUri = uri;
     	
@@ -174,19 +185,22 @@ public class MainFragment extends Fragment implements Const, DbConst {
     	return getActivity();
     }
     
-    protected void loadPostList() {
+    @SuppressWarnings("unused")
+	protected void loadPostList() {
     	ContentResolver cr = getBaseContext().getContentResolver();
     	Cursor c = cr.query(OkjspProvider.POST_URI, OkjspProvider.TablePost.PROJECTION_ALL, 
     			null, null, FIELD_CREATED_AT + " DESC");
     	
     	if (DEBUG_LOG) Log.d("loadPostList(): " + c.getCount());
     	
+		mRecentPostList.clear();
     	while(c.moveToNext()) {
     		Post post = new Post();
     		post.setId(c.getInt(c.getColumnIndex(FIELD_POST_ID)));
     		post.setUrl(c.getString(c.getColumnIndex(FIELD_POST_URL)));
     		post.setTitle(c.getString(c.getColumnIndex(FIELD_POST_TITLE)));
-    		post.setBoardName(c.getString(c.getColumnIndex(FIELD_BOARD_NAME)));
+    		post.setBoardName(c.getString(c.getColumnIndex(FIELD_BOARD_DISPLAY_NAME)));
+    		post.setBoardUrl(c.getString(c.getColumnIndex(FIELD_BOARD_URI_HOST)));
     		post.setWriterName(c.getString(c.getColumnIndex(FIELD_POST_WRITER_NAME)));
     		post.setProfileImageUrl(c.getString(c.getColumnIndex(FIELD_POST_WRITER_PHOTO_URL)));
     		post.setTimeStamp(c.getString(c.getColumnIndex(FIELD_POST_TIMESTAMP)));
@@ -221,11 +235,8 @@ public class MainFragment extends Fragment implements Const, DbConst {
         values.put(FIELD_POST_ID, post.getId());
         values.put(FIELD_POST_URL, post.getUrl());
         values.put(FIELD_POST_TITLE, post.getTitle());
-        if (!TextUtils.isEmpty(post.getBoardUrl())) {
-            values.put(FIELD_BOARD_NAME, Uri.parse(post.getBoardUrl()).getHost());
-        } else {
-        	
-        }
+        values.put(FIELD_BOARD_URI_HOST,post.getBoardUri());
+        values.put(FIELD_BOARD_DISPLAY_NAME, post.getBoardName());
         values.put(FIELD_POST_CLICK_COUNT, post.getReadCount());
         values.put(FIELD_POST_WRITER_NAME, post.getWriterName());
         values.put(FIELD_POST_WRITER_PHOTO_URL, post.getProfileImageUrl());

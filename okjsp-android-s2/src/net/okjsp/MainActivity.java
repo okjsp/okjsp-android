@@ -159,7 +159,6 @@ public class MainActivity extends FragmentActivity implements OnClickListener, A
         Log.i(TAG, "position:" + position + ", " + uri.toString());
         mActionsAdapter.setSelected(position);
         mActionsAdapter.notifyDataSetChanged();
-        setTitle(mActionsAdapter.getTitle(position));
         updateContent(uri);
         mMenuDrawer.showContent();
 	}
@@ -196,9 +195,7 @@ public class MainActivity extends FragmentActivity implements OnClickListener, A
      */
     protected void onTitleChanged(CharSequence title, int color) {
     	if (DEBUG_LOG) Log.d("onTitleChanged(" + title + ")");
-        if (MainFragment.URI.equals(currentUri)) {
-        	mActionBarHelper.onTitleChanged(title, color);
-        }
+       	mActionBarHelper.onTitleChanged(title, color);
     }
 	
     public void onActionsButtonClick(View view) {
@@ -259,6 +256,7 @@ public class MainActivity extends FragmentActivity implements OnClickListener, A
         }
 
         tr.commit();
+        setTitle(BoardManager.getInstance(getBaseContext()).getBoardName(uri.getHost()));
 
         currentUri = uri;
         currentContentFragmentTag = tag;

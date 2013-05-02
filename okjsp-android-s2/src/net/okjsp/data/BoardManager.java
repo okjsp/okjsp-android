@@ -13,6 +13,7 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.net.Uri;
+import android.text.TextUtils;
 
 public class BoardManager implements Const, DbConst {
 	protected static BoardManager mInstance = null;
@@ -49,10 +50,10 @@ public class BoardManager implements Const, DbConst {
 	public void initAnchorList() {
         final Resources res = mContext.getResources();
         String titles[] = res.getStringArray(R.array.anchor_names);
-        String urls[] = res.getStringArray(R.array.anchor_links);
+        String uris[] = res.getStringArray(R.array.anchor_links);
 
         for(int i = 0; i < titles.length; i++) {
-        	Board board = new Board(titles[i], urls[i]);
+        	Board board = new Board(titles[i], uris[i]);
         	mBoardList.add(board);
         }
 	}
@@ -61,26 +62,21 @@ public class BoardManager implements Const, DbConst {
         ContentResolver cr = mContext.getContentResolver();
         final Resources res = mContext.getResources();
         String titles[] = res.getStringArray(R.array.actions_names);
-        String urls[] = res.getStringArray(R.array.actions_links);
+        String uris[] = res.getStringArray(R.array.actions_links);
         
         initAnchorList();
         
         for(int i = 0; i < titles.length; i++) {
         	ContentValues cv = new ContentValues();
-        	Uri uri = Uri.parse(urls[i]);
-        	cv.put(FIELD_BOARD_NAME, uri.getHost());
+        	Uri uri = Uri.parse(uris[i]);
+        	cv.put(FIELD_BOARD_URI_HOST, uri.getHost());
         	cv.put(FIELD_BOARD_DISPLAY_NAME, titles[i]);
         	cv.put(FIELD_BOARD_INDEX, i);
-        	if ("notice".equals(uri.getHost())) {
-	        	cv.put(FIELD_BOARD_CLICK_COUNT, Integer.MAX_VALUE);
-        	} else if ("recent".equals(uri.getHost())) {
-	        	cv.put(FIELD_BOARD_CLICK_COUNT, Integer.MAX_VALUE - 1);
-        	}  
         	cv.put(FIELD_CREATED_AT, System.currentTimeMillis());
         	
         	cr.insert(OkjspProvider.BOARD_URI, cv);
         	
-        	Board board = new Board(titles[i], urls[i]);
+        	Board board = new Board(titles[i], uris[i]);
         	mBoardList.add(board);
         }
 	}
@@ -104,11 +100,11 @@ public class BoardManager implements Const, DbConst {
         
         while(c.moveToNext()) {
         	if (DEBUG_LOG) {
-        		Log.d("name:" + c.getString(c.getColumnIndex(FIELD_BOARD_NAME))
+        		Log.d("name:" + c.getString(c.getColumnIndex(FIELD_BOARD_URI_HOST))
         				+ ", clicked:" + c.getInt(c.getColumnIndex(FIELD_BOARD_CLICK_COUNT)));
         	}
         	Board board = new Board(c.getString(c.getColumnIndex(FIELD_BOARD_DISPLAY_NAME)),
-        			BOARD_URI_SCHEME + c.getString(c.getColumnIndex(FIELD_BOARD_NAME)));
+        			BOARD_URI_SCHEME + c.getString(c.getColumnIndex(FIELD_BOARD_URI_HOST)));
         	board.setClickCount(c.getInt(c.getColumnIndex(FIELD_BOARD_CLICK_COUNT)));
         	board.setTimeStamp(c.getLong(c.getColumnIndex(FIELD_BOARD_TIMESTAMP)));
         	mBoardList.add(board);
@@ -119,11 +115,53 @@ public class BoardManager implements Const, DbConst {
         return count;
 	}
 	
+	public String getBoardName(String board_uri) {
+		String board_name = null;
+		String uri_host = null;
+		
+		if (TextUtils.isEmpty(board_uri)) return null;
+		
+        final Resources res = mContext.getResources();
+        String titles[] = res.getStringArray(R.array.anchor_names);
+        String uris[] = res.getStringArray(R.array.anchor_links);
+        for(int i = 0; i < uris.length; i++) {
+        	if (board_uri.equals(Uri.parse(uris[i]).getHost())) {
+        		return titles[i];
+        	}
+        }
+		
+		if (board_uri.startsWith(BOARD_URI_SCHEME)) {
+			uri_host = Uri.parse(board_uri).getHost();
+		} else {
+			uri_host = board_uri;
+		}
+				
+        ContentResolver cr = mContext.getContentResolver();
+        String where = FIELD_BOARD_URI_HOST + " = '" + uri_host + "'";
+        Cursor c = cr.query(OkjspProvider.BOARD_URI, OkjspProvider.TableBoard.PROJECTION_ALL, where, null, null);
+        
+        int count = c.getCount();
+        if (DEBUG_LOG) {
+        	Log.d("board count in DB: " + c.getCount() + ", " + board_uri);
+        }
+        
+        if (count > 0) {
+        	initAnchorList();
+        }
+        
+        while(c.moveToNext()) {
+        	board_name = c.getString(c.getColumnIndex(FIELD_BOARD_DISPLAY_NAME));
+        	if (!TextUtils.isEmpty(board_name)) break;
+        }
+        c.close();
+        return board_name;
+	}
+	
 	public void onBoadClicked(String board) {
 		if ("notice".equals(board) || "recent".equals(board)) return;
 		
         ContentResolver cr = mContext.getContentResolver();
-        String where = FIELD_BOARD_NAME + " = '" + board + "'";
+        String where = FIELD_BOARD_URI_HOST + " = '" + board + "'";
         Cursor c = cr.query(OkjspProvider.BOARD_URI, OkjspProvider.TableBoard.PROJECTION_ALL, 
         		where, null, FIELD_BOARD_CLICK_COUNT + " DESC");
 
@@ -131,7 +169,7 @@ public class BoardManager implements Const, DbConst {
         while (c.moveToNext()) {
         	if (DEBUG_LOG) {
         		Log.d("[" + c.getLong(c.getColumnIndex(FIELD_BASECOLMUNS_ID)) + "]"
-        				+ " name: " + c.getString(c.getColumnIndex(FIELD_BOARD_NAME))
+        				+ " name: " + c.getString(c.getColumnIndex(FIELD_BOARD_URI_HOST))
         				+ ", count: " + c.getInt(c.getColumnIndex(FIELD_BOARD_CLICK_COUNT)));
         	}
         	_id = c.getLong(c.getColumnIndex(FIELD_BASECOLMUNS_ID));
