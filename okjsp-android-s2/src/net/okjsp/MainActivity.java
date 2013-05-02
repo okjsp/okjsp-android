@@ -9,7 +9,10 @@ import net.okjsp.imageloader.ImageCache;
 import net.okjsp.imageloader.ImageFetcher;
 import net.okjsp.imageloader.ImageResizer;
 import net.okjsp.imageloader.ImageWorker;
+import net.okjsp.util.Log;
+import net.okjsp.widget.actionbar.ActionBarHelper;
 import shared.ui.actionscontentview.ActionsContentView;
+import android.app.Activity;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
@@ -19,20 +22,25 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.util.DisplayMetrics;
-import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.ListView;
-import android.widget.TextView;
+import android.widget.Toast;
 
 public class MainActivity extends FragmentActivity implements OnClickListener, AdapterView.OnItemClickListener, Const {
 	protected static final String TAG = "MainActivity";
+	protected static boolean DEBUG_LOG = true;
 
 	protected static final String STATE_URI = "state:uri";
 	protected static final String STATE_FRAGMENT_TAG = "state:fragment_tag";
 
+    protected ActionBarHelper mActionBarHelper = ActionBarHelper.createInstance(this);
+	
 	protected ActionsContentView mMenuDrawer;
 	protected ActionsAdapter mActionsAdapter;
 	protected ListView mActionListView;
@@ -73,8 +81,8 @@ public class MainActivity extends FragmentActivity implements OnClickListener, A
         mActionListView.setAdapter(mActionsAdapter);
         mActionListView.setOnItemClickListener(this);
 
-        findViewById(R.id.iv_menu).setOnClickListener(this);
-
+        mActionBarHelper.onCreate(savedInstanceState);
+        
         if (savedInstanceState != null) {
             currentUri = Uri.parse(savedInstanceState.getString(STATE_URI));
             currentContentFragmentTag = savedInstanceState.getString(STATE_FRAGMENT_TAG);
@@ -86,6 +94,13 @@ public class MainActivity extends FragmentActivity implements OnClickListener, A
             mHandler.postDelayed(mMenuDrawerOpenRunnable, 1000);
             mRunOnce = true;
         }
+    }
+
+    /**{@inheritDoc}*/
+    @Override
+    protected void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        mActionBarHelper.onPostCreate(savedInstanceState);
     }
 
     @Override
@@ -105,6 +120,20 @@ public class MainActivity extends FragmentActivity implements OnClickListener, A
         super.onDestroy();
         savePreferences();
         mActionsAdapter.recycle();
+    }
+    
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater menuInflater = getMenuInflater();
+        menuInflater.inflate(R.menu.main, menu);
+
+        // Calling super after populating the menu is necessary here to ensure that the
+        // action bar helpers have a chance to handle this event.
+        boolean retValue = false;
+        retValue |= mActionBarHelper.onCreateOptionsMenu(menu);
+        retValue |= super.onCreateOptionsMenu(menu);
+        
+        return retValue;
     }
     
     @Override
@@ -130,7 +159,7 @@ public class MainActivity extends FragmentActivity implements OnClickListener, A
         Log.i(TAG, "position:" + position + ", " + uri.toString());
         mActionsAdapter.setSelected(position);
         mActionsAdapter.notifyDataSetChanged();
-        updateTitle(mActionsAdapter.getTitle(position));
+        setTitle(mActionsAdapter.getTitle(position));
         updateContent(uri);
         mMenuDrawer.showContent();
 	}
@@ -144,6 +173,34 @@ public class MainActivity extends FragmentActivity implements OnClickListener, A
         }
     }
 	
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+        		if (mMenuDrawer.isActionsShown()) {
+                	mMenuDrawer.showContent();
+        		} else {
+        			mMenuDrawer.showActions();
+        		}
+                break;
+
+            case R.id.action_settings:
+                Toast.makeText(this, "Tapped settings", Toast.LENGTH_SHORT).show();
+                break;
+        }
+        return super.onOptionsItemSelected(item);
+    }	
+	
+    /**
+     * Action bar helper code to be run in {@link Activity#onTitleChanged(CharSequence, int)}.
+     */
+    protected void onTitleChanged(CharSequence title, int color) {
+    	if (DEBUG_LOG) Log.d("onTitleChanged(" + title + ")");
+        if (MainFragment.URI.equals(currentUri)) {
+        	mActionBarHelper.onTitleChanged(title, color);
+        }
+    }
+	
     public void onActionsButtonClick(View view) {
         if (mMenuDrawer.isActionsShown())
         	mMenuDrawer.showContent();
@@ -151,10 +208,6 @@ public class MainActivity extends FragmentActivity implements OnClickListener, A
         	mMenuDrawer.showActions();
     }
     
-    protected void updateTitle(String title) {
-    	((TextView)findViewById(R.id.tv_header_title)).setText(title);
-    }
-
     protected void updateContent(Uri uri) {
         final Fragment fragment;
         final String tag;

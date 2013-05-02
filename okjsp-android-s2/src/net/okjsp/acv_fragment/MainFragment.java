@@ -18,6 +18,7 @@ import net.okjsp.imageloader.ImageWorker;
 import net.okjsp.provider.DbConst;
 import net.okjsp.provider.OkjspProvider;
 import net.okjsp.util.Log;
+import net.okjsp.widget.actionbar.ActionBarHelper;
 
 import org.apache.http.client.ClientProtocolException;
 
@@ -55,7 +56,8 @@ import com.handmark.pulltorefresh.PullToRefreshListView;
 
 public class MainFragment extends Fragment implements Const, DbConst {
     public static final String TAG = MainFragment.class.getSimpleName();
-    public static final boolean DEBUG_LOG = true;
+    public static final boolean DEBUG_LOG = false;
+    public static final boolean DEBUG_LOG_VERBOSE = false;
     
     protected static final int MSG_PARSE_PAGE_DONE = 1;
     protected static final int ANIMATION_FADEOUT_DURATION = 600;
@@ -191,7 +193,7 @@ public class MainFragment extends Fragment implements Const, DbConst {
     		post.setReadCount(c.getInt(c.getColumnIndex(FIELD_POST_CLICK_COUNT)));
     		post.setAsRead(c.getInt(c.getColumnIndex(FIELD_POST_ISREAD)) > 0 ? true : false);
     		
-    		if (DEBUG_LOG) {
+    		if (DEBUG_LOG && DEBUG_LOG_VERBOSE) {
     			Log.d("[" + post.getId() + "]: " + post.toString());
     		}
     		mRecentPostList.add(post);
@@ -205,11 +207,12 @@ public class MainFragment extends Fragment implements Const, DbConst {
         }
     }
     
-    protected void savePost(Post post) {
+    @SuppressWarnings("unused")
+	protected void savePost(Post post) {
     	ContentResolver cr = getBaseContext().getContentResolver();
     	
     	if (isExist(post.getId())) {
-    		if (DEBUG_LOG) Log.e("[" + post.getId() + "] " + post.getUrl() + ", " + Uri.parse(post.getUrl()).getLastPathSegment() + " exist!!!");
+    		if (DEBUG_LOG && DEBUG_LOG_VERBOSE) Log.e("[" + post.getId() + "] " + post.getUrl() + ", " + Uri.parse(post.getUrl()).getLastPathSegment() + " exist!!!");
     		return;
     	}
 
@@ -231,6 +234,10 @@ public class MainFragment extends Fragment implements Const, DbConst {
         values.put(FIELD_CREATED_AT, post.getTime());
         values.put(FIELD_UPDATED_AT, System.currentTimeMillis());
         Uri uri = cr.insert(OkjspProvider.POST_URI, values);
+        
+        if (DEBUG_LOG && DEBUG_LOG_VERBOSE) {
+        	Log.v("savePost():" + uri.toString());
+        }
     }
     
     protected long getMaxPostId() {
@@ -274,7 +281,7 @@ public class MainFragment extends Fragment implements Const, DbConst {
     	cr.update(OkjspProvider.POST_URI, cv, where, null);
     }
     
-    public boolean checkApiLevel(int level) {
+    protected boolean checkApiLevel(int level) {
         return (Build.VERSION.SDK_INT >= level);
     }
     

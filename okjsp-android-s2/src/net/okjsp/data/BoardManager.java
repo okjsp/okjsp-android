@@ -7,7 +7,6 @@ import net.okjsp.R;
 import net.okjsp.provider.DbConst;
 import net.okjsp.provider.OkjspProvider;
 import net.okjsp.util.Log;
-import android.app.ProgressDialog;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
@@ -17,7 +16,7 @@ import android.net.Uri;
 
 public class BoardManager implements Const, DbConst {
 	protected static BoardManager mInstance = null;
-	protected static final boolean DEBUG_LOG = true;
+	protected static final boolean DEBUG_LOG = false;
 
 	protected Context mContext;
 	protected ArrayList<Board> mBoardList = new ArrayList<Board>();
