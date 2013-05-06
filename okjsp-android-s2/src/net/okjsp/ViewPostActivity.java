@@ -13,7 +13,8 @@ import net.okjsp.data.Post;
 
 import org.apache.http.client.ClientProtocolException;
 
-import android.app.ListActivity;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -26,7 +27,12 @@ import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.widget.BaseAdapter;
 
-public class ViewPostActivity extends ListActivity {
+import com.actionbarsherlock.app.SherlockListActivity;
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuInflater;
+import com.actionbarsherlock.view.MenuItem;
+
+public class ViewPostActivity extends SherlockListActivity {
 	protected static final String TAG = "ViewPostActivity";
 	protected static final boolean DEBUG_LOG = false;
 	protected static final int MSG_PARSE_PAGE_DONE = 1;
@@ -40,6 +46,9 @@ public class ViewPostActivity extends ListActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_viewpost);
         
+        getSherlock().getActionBar().setHomeButtonEnabled(true);
+        getSherlock().getActionBar().setDisplayHomeAsUpEnabled(true);
+        
         if (getIntent() == null || !getIntent().hasExtra("post")) {
         	Log.e(TAG, "Intent or Extra parameters are NULL!!");
         	finish();
@@ -50,9 +59,50 @@ public class ViewPostActivity extends ListActivity {
         mPostInfo = getIntent().getExtras().getParcelable("post");
         if (DEBUG_LOG) Log.d(TAG, "title:" + mPostInfo.getTitle() + ", url:" + mPostInfo.getProfileImageUrl());
         mMainThread.start();
-        setTitle(mPostInfo.getTitle());
+        setTitle("[" + mPostInfo.getBoardName() + "]");
+        getSherlock().getActionBar().setSubtitle(mPostInfo.getTitle());
     }
 	
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		MenuInflater inflater = getSherlock().getMenuInflater();
+		inflater.inflate(R.menu.view_post, menu);
+		return super.onCreateOptionsMenu(menu);
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		boolean consumed = true;
+		Intent intent = null;
+		
+		switch (item.getItemId()) {
+		case android.R.id.home:
+			intent = new Intent(this, MainActivity.class);
+			intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+			startActivity(intent);			
+			break;
+			
+		case R.id.action_browser:
+			Uri uri = Uri.parse(mPostInfo.getUrl());
+			intent  = new Intent(Intent.ACTION_VIEW,uri);
+			startActivity(intent);
+			break;
+			
+		case R.id.action_share:
+			intent = new Intent(android.content.Intent.ACTION_SEND);
+			intent.setType("text/plain");
+			intent.putExtra(Intent.EXTRA_SUBJECT, mPostInfo.getTitle());
+			intent.putExtra(Intent.EXTRA_TEXT, mPostInfo.getUrl());
+			startActivity(Intent.createChooser(intent, getBaseContext().getString(R.string.action_share)));
+			break;
+			
+		default:
+			consumed = false;
+			break;
+		}
+		return consumed ? true : super.onOptionsItemSelected(item);
+	}
+
 	protected String getHtmlBody() {
         String htmlData="<html>\n";
         htmlData+="<header>\n";

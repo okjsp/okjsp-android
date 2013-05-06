@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import net.okjsp.Const;
 import net.okjsp.R;
 import net.okjsp.provider.DbConst;
-import net.okjsp.provider.OkjspProvider;
+import net.okjsp.provider.CacheProvider;
 import net.okjsp.util.Log;
 import android.content.ContentResolver;
 import android.content.ContentValues;
@@ -17,7 +17,7 @@ import android.text.TextUtils;
 
 public class BoardManager implements Const, DbConst {
 	protected static BoardManager mInstance = null;
-	protected static final boolean DEBUG_LOG = false;
+	protected static final boolean DEBUG_LOG = true;
 
 	protected Context mContext;
 	protected ArrayList<Board> mBoardList = new ArrayList<Board>();
@@ -74,7 +74,7 @@ public class BoardManager implements Const, DbConst {
         	cv.put(FIELD_BOARD_INDEX, i);
         	cv.put(FIELD_CREATED_AT, System.currentTimeMillis());
         	
-        	cr.insert(OkjspProvider.BOARD_URI, cv);
+        	cr.insert(CacheProvider.BOARD_URI, cv);
         	
         	Board board = new Board(titles[i], uris[i]);
         	mBoardList.add(board);
@@ -84,7 +84,7 @@ public class BoardManager implements Const, DbConst {
 	public int loadBoardList() {
 		int count = 0;
         ContentResolver cr = mContext.getContentResolver();
-        Cursor c = cr.query(OkjspProvider.BOARD_URI, OkjspProvider.TableBoard.PROJECTION_ALL, null, null, 
+        Cursor c = cr.query(CacheProvider.BOARD_URI, CacheProvider.TableBoard.PROJECTION_ALL, null, null, 
         		FIELD_BOARD_CLICK_COUNT + " DESC"
         		+ ", " + FIELD_BOARD_TIMESTAMP + " DESC"
         		+ ", " + FIELD_BOARD_INDEX + " ASC");
@@ -119,7 +119,10 @@ public class BoardManager implements Const, DbConst {
 		String board_name = null;
 		String uri_host = null;
 		
-		if (TextUtils.isEmpty(board_uri)) return null;
+		if (TextUtils.isEmpty(board_uri)) {
+			Log.e("getBoardName() called with null parameter!!!");
+			return null;
+		}
 		
         final Resources res = mContext.getResources();
         String titles[] = res.getStringArray(R.array.anchor_names);
@@ -138,7 +141,7 @@ public class BoardManager implements Const, DbConst {
 				
         ContentResolver cr = mContext.getContentResolver();
         String where = FIELD_BOARD_URI_HOST + " = '" + uri_host + "'";
-        Cursor c = cr.query(OkjspProvider.BOARD_URI, OkjspProvider.TableBoard.PROJECTION_ALL, where, null, null);
+        Cursor c = cr.query(CacheProvider.BOARD_URI, CacheProvider.TableBoard.PROJECTION_ALL, where, null, null);
         
         int count = c.getCount();
         if (DEBUG_LOG) {
@@ -154,6 +157,9 @@ public class BoardManager implements Const, DbConst {
         	if (!TextUtils.isEmpty(board_name)) break;
         }
         c.close();
+        
+        if (DEBUG_LOG) Log.d("getBoardName(" + board_uri + "): " + board_name);
+        
         return board_name;
 	}
 	
@@ -162,7 +168,7 @@ public class BoardManager implements Const, DbConst {
 		
         ContentResolver cr = mContext.getContentResolver();
         String where = FIELD_BOARD_URI_HOST + " = '" + board + "'";
-        Cursor c = cr.query(OkjspProvider.BOARD_URI, OkjspProvider.TableBoard.PROJECTION_ALL, 
+        Cursor c = cr.query(CacheProvider.BOARD_URI, CacheProvider.TableBoard.PROJECTION_ALL, 
         		where, null, FIELD_BOARD_CLICK_COUNT + " DESC");
 
         long _id;
@@ -179,7 +185,7 @@ public class BoardManager implements Const, DbConst {
         	cv.put(FIELD_BOARD_TIMESTAMP, System.currentTimeMillis());
         	
             where = FIELD_BASECOLMUNS_ID + " = " + _id;
-        	cr.update(OkjspProvider.BOARD_URI, cv, where, null);
+        	cr.update(CacheProvider.BOARD_URI, cv, where, null);
         	break;
         }
         

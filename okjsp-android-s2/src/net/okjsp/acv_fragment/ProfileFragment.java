@@ -1,5 +1,7 @@
 package net.okjsp.acv_fragment;
 
+import com.actionbarsherlock.app.SherlockFragment;
+
 import net.okjsp.Const;
 import net.okjsp.R;
 import android.annotation.TargetApi;
@@ -20,7 +22,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 
-public class ProfileFragment extends Fragment implements Const {
+public class ProfileFragment extends SherlockFragment implements Const {
     public static final String TAG = ProfileFragment.class.getSimpleName();
     
     protected static final String SCHEME = "profile";

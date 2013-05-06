@@ -9,11 +9,12 @@ import net.okjsp.R;
 import net.okjsp.ViewPostActivity;
 import net.okjsp.data.Post;
 import net.okjsp.imageloader.ImageWorker;
+import net.okjsp.provider.CacheProvider;
 import net.okjsp.provider.DbConst;
-import net.okjsp.provider.OkjspProvider;
 import net.okjsp.thread.ParseBoardPageThread;
 import net.okjsp.thread.ParseMainPageThread;
 import net.okjsp.util.Log;
+import net.okjsp.util.Utils;
 import android.annotation.SuppressLint;
 import android.content.ContentResolver;
 import android.content.ContentValues;
@@ -22,7 +23,6 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -44,10 +44,11 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.actionbarsherlock.app.SherlockFragment;
 import com.handmark.pulltorefresh.PullToRefreshBase.OnRefreshListener;
 import com.handmark.pulltorefresh.PullToRefreshListView;
 
-public class BoardFragment extends Fragment implements Const, DbConst {
+public class BoardFragment extends SherlockFragment implements Const, DbConst {
     public static final String TAG = BoardFragment.class.getSimpleName();
     public static final boolean DEBUG_LOG = true;
     public static final boolean DEBUG_LOG_VERBOSE = false;
@@ -142,6 +143,8 @@ public class BoardFragment extends Fragment implements Const, DbConst {
 			mParseThread.start();
 		}
     	
+		setHasOptionsMenu(true);
+		
         return mView;
     }
     
@@ -184,7 +187,7 @@ public class BoardFragment extends Fragment implements Const, DbConst {
     @SuppressWarnings("unused")
 	protected void loadPostList() {
     	ContentResolver cr = getBaseContext().getContentResolver();
-    	Cursor c = cr.query(OkjspProvider.POST_URI, OkjspProvider.TablePost.PROJECTION_ALL, 
+    	Cursor c = cr.query(CacheProvider.POST_URI, CacheProvider.TablePost.PROJECTION_ALL, 
     			null, null, FIELD_CREATED_AT + " DESC");
     	
     	if (DEBUG_LOG) Log.d("loadPostList(): " + c.getCount());
@@ -240,7 +243,7 @@ public class BoardFragment extends Fragment implements Const, DbConst {
         values.put(FIELD_POST_ISREAD, post.isRead() ? 1 : 0);
         values.put(FIELD_CREATED_AT, post.getTime());
         values.put(FIELD_UPDATED_AT, System.currentTimeMillis());
-        Uri uri = cr.insert(OkjspProvider.POST_URI, values);
+        Uri uri = cr.insert(CacheProvider.POST_URI, values);
         
         if (DEBUG_LOG && DEBUG_LOG_VERBOSE) {
         	Log.v("savePost():" + uri.toString());
@@ -251,7 +254,7 @@ public class BoardFragment extends Fragment implements Const, DbConst {
     	long max_id = 0;
 
     	ContentResolver cr = getBaseContext().getContentResolver();
-		Cursor c = cr.query(OkjspProvider.POST_URI,	new String[] { "MAX(" + FIELD_POST_ID + ")" }, null, null, null);
+		Cursor c = cr.query(CacheProvider.POST_URI,	new String[] { "MAX(" + FIELD_POST_ID + ")" }, null, null, null);
 		try {
 			c.moveToFirst();
 			max_id = c.getInt(0);
@@ -271,7 +274,7 @@ public class BoardFragment extends Fragment implements Const, DbConst {
 
     	ContentResolver cr = getBaseContext().getContentResolver();
     	String where = FIELD_POST_ID + " = " + post_id;
-    	Cursor c = cr.query(OkjspProvider.POST_URI, OkjspProvider.TablePost.PROJECTION_ALL, 
+    	Cursor c = cr.query(CacheProvider.POST_URI, CacheProvider.TablePost.PROJECTION_ALL, 
     			where, null, null);
     	
     	is_exist = (c.getCount() > 0) ? true : false;
@@ -285,11 +288,7 @@ public class BoardFragment extends Fragment implements Const, DbConst {
     	String where = FIELD_POST_ID + " = " + post_id;
     	ContentValues cv = new ContentValues();
     	cv.put(FIELD_POST_ISREAD, 1);
-    	cr.update(OkjspProvider.POST_URI, cv, where, null);
-    }
-    
-    protected boolean checkApiLevel(int level) {
-        return (Build.VERSION.SDK_INT >= level);
+    	cr.update(CacheProvider.POST_URI, cv, where, null);
     }
     
     protected Handler mHandler = new Handler() {
@@ -374,7 +373,7 @@ public class BoardFragment extends Fragment implements Const, DbConst {
 				holder.tv_writer.setTextColor(Color.DKGRAY);
 				holder.tv_timestamp.setTextColor(Color.DKGRAY);
 				holder.tv_board.setTextColor(Color.DKGRAY);
-				if (checkApiLevel(11)) {
+				if (Utils.checkApiLevel(11)) {
 					holder.iv_profile.setAlpha(0.3f);
 				} else {
 					holder.iv_profile.setAlpha(80);
@@ -385,7 +384,7 @@ public class BoardFragment extends Fragment implements Const, DbConst {
 				holder.tv_writer.setTextColor(Color.LTGRAY);
 				holder.tv_timestamp.setTextColor(Color.LTGRAY);
 				holder.tv_board.setTextColor(Color.LTGRAY);
-				if (checkApiLevel(11)) {
+				if (Utils.checkApiLevel(11)) {
 					holder.iv_profile.setAlpha(1.0f);
 				} else {
 					holder.iv_profile.setAlpha(255);
