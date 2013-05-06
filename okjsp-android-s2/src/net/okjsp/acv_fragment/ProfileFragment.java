@@ -36,6 +36,14 @@ public class ProfileFragment extends Fragment implements Const {
     protected String mUsername;
     protected String mPassword;
 
+    public static ProfileFragment newInstance(CharSequence uri_host) {
+    	ProfileFragment f = new ProfileFragment();
+        Bundle b = new Bundle();
+        b.putCharSequence("board_uri_host", uri_host);
+        f.setArguments(b);
+        return f;
+    }
+    
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
     	mView = inflater.inflate(R.layout.fragment_profile, container, false);

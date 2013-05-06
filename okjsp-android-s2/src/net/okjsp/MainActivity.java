@@ -2,7 +2,6 @@ package net.okjsp;
 
 import net.okjsp.acv_adapter.ActionsAdapter;
 import net.okjsp.acv_fragment.BoardFragment;
-import net.okjsp.acv_fragment.MainFragment;
 import net.okjsp.acv_fragment.ProfileFragment;
 import net.okjsp.data.BoardManager;
 import net.okjsp.imageloader.ImageCache;
@@ -38,6 +37,7 @@ public class MainActivity extends FragmentActivity implements OnClickListener, A
 
 	protected static final String STATE_URI = "state:uri";
 	protected static final String STATE_FRAGMENT_TAG = "state:fragment_tag";
+	protected static final String DEFAULT_URI = "board://recent";
 
     protected ActionBarHelper mActionBarHelper = ActionBarHelper.createInstance(this);
 	
@@ -45,7 +45,7 @@ public class MainActivity extends FragmentActivity implements OnClickListener, A
 	protected ActionsAdapter mActionsAdapter;
 	protected ListView mActionListView;
 
-	protected Uri currentUri = MainFragment.URI;
+	protected Uri currentUri = BoardFragment.URI;
 	protected String currentContentFragmentTag = null;
 
     protected static ImageResizer mImageWorker;
@@ -218,34 +218,23 @@ public class MainActivity extends FragmentActivity implements OnClickListener, A
                 tr.hide(currentFragment);
         }
 
-        if (MainFragment.URI.equals(uri)) {
-            tag = MainFragment.TAG;
-            final Fragment foundFragment = fm.findFragmentByTag(tag);
-            if (foundFragment != null) {
-                fragment = foundFragment;
-            } else {
-                fragment = new MainFragment();
-                ((MainFragment)fragment).setSplash(mShowSplash);
-                mShowSplash = false;
-            }
-        } else if (ProfileFragment.URI.equals(uri)) {
+        if (ProfileFragment.URI.equals(uri)) {
             tag = ProfileFragment.TAG;
             final Fragment foundFragment = fm.findFragmentByTag(tag);
             if (foundFragment != null) {
                 fragment = foundFragment;
             } else {
-                fragment = new ProfileFragment();
+                fragment = ProfileFragment.newInstance(uri.getHost());
             }
         } else {
         	Log.i(TAG, "updateContent:" + uri.toString());
-            tag = BoardFragment.TAG;
+            tag = uri.getHost();
             final Fragment foundFragment = fm.findFragmentByTag(tag);
             if (foundFragment != null) {
                 fragment = foundFragment;
             } else {
-                fragment = new BoardFragment();
+                fragment = BoardFragment.newInstance(uri.getHost());
             }
-            ((BoardFragment)fragment).setUri(uri);
             BoardManager.getInstance(getBaseContext()).onBoadClicked(uri.getHost());
         }
 
