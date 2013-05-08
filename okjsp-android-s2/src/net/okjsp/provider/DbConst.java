@@ -33,5 +33,6 @@ public interface DbConst {
     public static final String FIELD_POST_CONTENT = "content";
     public static final String FIELD_POST_TIMESTAMP = "timestamp";
     public static final String FIELD_POST_ISREAD = "is_read";
+    public static final String FIELD_POST_ISPINNED = "is_pinned";
     public static final String FIELD_POST_COMMENT_COUNT = "comment_count";
 }

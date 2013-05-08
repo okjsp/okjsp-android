@@ -3,11 +3,11 @@ package net.okjsp;
 import net.okjsp.acv_adapter.ActionsAdapter;
 import net.okjsp.acv_fragment.BoardFragment;
 import net.okjsp.acv_fragment.ProfileFragment;
-import net.okjsp.data.BoardManager;
 import net.okjsp.imageloader.ImageCache;
 import net.okjsp.imageloader.ImageFetcher;
 import net.okjsp.imageloader.ImageResizer;
 import net.okjsp.imageloader.ImageWorker;
+import net.okjsp.manager.BoardManager;
 import net.okjsp.util.Log;
 import shared.ui.actionscontentview.ActionsContentView;
 import android.annotation.SuppressLint;
@@ -29,6 +29,7 @@ import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
+import com.actionbarsherlock.view.Window;
 
 public class MainActivity extends SherlockFragmentActivity implements OnClickListener, AdapterView.OnItemClickListener, Const {
 	protected static final String TAG = "MainActivity";
@@ -54,6 +55,10 @@ public class MainActivity extends SherlockFragmentActivity implements OnClickLis
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        //This has to be called before setContentView and you must use the
+        //class in com.actionbarsherlock.view and NOT android.view
+        requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
+        
         setContentView(R.layout.activity_main);
         getSherlock().getActionBar().setHomeButtonEnabled(true);
         getSherlock().getActionBar().setDisplayHomeAsUpEnabled(true);
@@ -85,6 +90,7 @@ public class MainActivity extends SherlockFragmentActivity implements OnClickLis
         }
 
         updateContent(currentUri);
+        getSherlock().getActionBar().setDisplayHomeAsUpEnabled(false);
         
         if (!mRunOnce) {
             mHandler.postDelayed(mMenuDrawerOpenRunnable, 1000);
@@ -155,6 +161,7 @@ public class MainActivity extends SherlockFragmentActivity implements OnClickLis
 	@Override
     public void onBackPressed() {
 		if (mMenuDrawer.isActionsShown()) {
+        	getSherlock().getActionBar().setDisplayHomeAsUpEnabled(false);
         	mMenuDrawer.showContent();
 		} else {
         	super.onBackPressed();
@@ -169,11 +176,10 @@ public class MainActivity extends SherlockFragmentActivity implements OnClickLis
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
+            	getSherlock().getActionBar().setDisplayHomeAsUpEnabled(!mMenuDrawer.isActionsShown());
         		if (mMenuDrawer.isActionsShown()) {
-        			getSherlock().getActionBar().setDisplayHomeAsUpEnabled(true);
                 	mMenuDrawer.showContent();
         		} else {
-        			getSherlock().getActionBar().setDisplayHomeAsUpEnabled(false);
         			mMenuDrawer.showActions();
         		}
                 break;
@@ -244,6 +250,11 @@ public class MainActivity extends SherlockFragmentActivity implements OnClickLis
     
     public static ImageWorker getImageWorker() {
         return mImageWorker;
+    }
+    
+    public void showProgressBarIndeterminateVisibility(boolean visible){
+    	getSherlock().setProgressBarIndeterminate(true);
+    	getSherlock().setProgressBarIndeterminateVisibility(visible);
     }
     
     protected void getPreferences(){

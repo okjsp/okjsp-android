@@ -10,6 +10,7 @@ import net.htmlparser.jericho.HTMLElementName;
 import net.htmlparser.jericho.Source;
 import net.okjsp.Const;
 import net.okjsp.data.Post;
+import net.okjsp.manager.PostManager;
 import net.okjsp.util.Log;
 
 import org.apache.http.client.ClientProtocolException;
@@ -61,11 +62,7 @@ public class ParseMainPageThread extends Thread implements Const {
 						String value = td.getTextExtractor().toString();
 						// Log.d(TAG, "[" + mRecentPostList.size() + "]:" + attr_value + " - " + value);
 						if ("ref tiny".equalsIgnoreCase(attr_value)) {
-							try {
-								post.setId(Integer.valueOf(value));
-							} catch (NumberFormatException e) {
-								post.setId(-1);
-							}
+							post.extractPostId(value);
 						} else if ("when tiny".equalsIgnoreCase(attr_value)) {
 							post.setTimeStamp(td.getAttributeValue("title"));
 							//Log.d(TAG, "     ----" + td.getAttributeValue("title"));
@@ -76,6 +73,7 @@ public class ParseMainPageThread extends Thread implements Const {
 								Element href = el_list.get(0);
 								//Log.d(TAG, "     ----" + href.getAttributeValue("href"));
 								post.setUrl(href.getAttributeValue("href"));
+								post.extractPostId(href.getAttributeValue("href"));
 							}
 						} else if ("id".equalsIgnoreCase(attr_value)) {
 							List<Element> el_list = td.getAllElements(HTMLElementName.IMG);
@@ -123,7 +121,6 @@ public class ParseMainPageThread extends Thread implements Const {
 			}
 
 			Log.d(TAG, "Post Count:" + mPostList.size());
-			//savePostList(post_list);
 			/*for(Post p : mRecentPostList) {
 				Log.d(TAG, "--------------------------------------------------");
 				Log.i(TAG, "Post Id    :" + p.getPostId());

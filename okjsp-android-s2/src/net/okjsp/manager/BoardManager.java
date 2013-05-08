@@ -1,9 +1,10 @@
-package net.okjsp.data;
+package net.okjsp.manager;
 
 import java.util.ArrayList;
 
 import net.okjsp.Const;
 import net.okjsp.R;
+import net.okjsp.data.Board;
 import net.okjsp.provider.DbConst;
 import net.okjsp.provider.CacheProvider;
 import net.okjsp.util.Log;

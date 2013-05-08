@@ -1,6 +1,7 @@
 package net.okjsp.acv_fragment;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import net.okjsp.Const;
@@ -9,6 +10,7 @@ import net.okjsp.R;
 import net.okjsp.ViewPostActivity;
 import net.okjsp.data.Post;
 import net.okjsp.imageloader.ImageWorker;
+import net.okjsp.manager.PostManager;
 import net.okjsp.provider.CacheProvider;
 import net.okjsp.provider.DbConst;
 import net.okjsp.thread.ParseBoardPageThread;
@@ -22,11 +24,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewCompat;
 import android.text.TextUtils;
 import android.view.ContextMenu;
@@ -64,6 +66,7 @@ public class BoardFragment extends SherlockFragment implements Const, DbConst {
     protected View mView;
     protected PullToRefreshListView mPtrView;
     protected ArrayList<Post> mPostList = new ArrayList<Post>();
+    protected HashMap<Integer, Boolean> mNewPostMap = new HashMap<Integer, Boolean>();
     protected PostAdapter mPostAdapter;
     protected ImageWorker mImageWorker = MainActivity.getImageWorker();
     protected Thread mParseThread;
@@ -104,9 +107,9 @@ public class BoardFragment extends SherlockFragment implements Const, DbConst {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
 				position--; // position start from '1' not '0' at this method because of pulltorefresh header?
-				if (DEBUG_LOG) Log.i(TAG, "onListItemClick: " + position + ", " + mPostList.get(position).getUrl());
+				if (DEBUG_LOG) Log.i("onListItemClick: " + position + ", " + mPostList.get(position).getUrl());
 				
-				setAsRead(mPostList.get(position).getId());
+				PostManager.getInstance(getBaseContext()).setAsRead(mPostList.get(position).getId());
 				mPostList.get(position).setAsRead(true);
 				mPostAdapter.notifyDataSetChanged();
 				
@@ -119,8 +122,7 @@ public class BoardFragment extends SherlockFragment implements Const, DbConst {
 		mPtrView.setOnRefreshListener(new OnRefreshListener() {
 			@Override
 			public void onRefresh() {
-				//mThread = new ParsePageThread();
-				//mThread.start();
+				BoardFragment.this.onRefresh();
 			}
 
 			@Override
@@ -131,18 +133,12 @@ public class BoardFragment extends SherlockFragment implements Const, DbConst {
 		actualListView.setAdapter(mPostAdapter);
 
 		if (DEBUG_LOG) Log.d("uri_host: " + getUriHost());
-		
-		String uri_host = getUriHost();
-		if ("recent".equals(uri_host)) {
-			loadPostList();
-			mParseThread = new ParseMainPageThread(Uri.parse(BOARD_URI_SCHEME + uri_host), mHandler);
-			mParseThread.start();
-		} else {
-			mView.findViewById(R.id.iv_splash).setVisibility(View.GONE);
-			mParseThread = new ParseBoardPageThread(Uri.parse(BOARD_URI_SCHEME + uri_host), mHandler);
-			mParseThread.start();
+		mPostList.addAll(PostManager.getInstance(getBaseContext()).loadPostList());
+		if (mPostList != null && mPostList.size() > 0) {
+			mPostAdapter.notifyDataSetChanged();
 		}
-    	
+		onRefresh();
+		
 		setHasOptionsMenu(true);
 		
         return mView;
@@ -184,71 +180,50 @@ public class BoardFragment extends SherlockFragment implements Const, DbConst {
     	return getActivity();
     }
     
-    @SuppressWarnings("unused")
-	protected void loadPostList() {
-    	ContentResolver cr = getBaseContext().getContentResolver();
-    	Cursor c = cr.query(CacheProvider.POST_URI, CacheProvider.TablePost.PROJECTION_ALL, 
-    			null, null, FIELD_CREATED_AT + " DESC");
-    	
-    	if (DEBUG_LOG) Log.d("loadPostList(): " + c.getCount());
-    	
-		mPostList.clear();
-    	while(c.moveToNext()) {
-    		Post post = new Post();
-    		post.setId(c.getInt(c.getColumnIndex(FIELD_POST_ID)));
-    		post.setUrl(c.getString(c.getColumnIndex(FIELD_POST_URL)));
-    		post.setTitle(c.getString(c.getColumnIndex(FIELD_POST_TITLE)));
-    		post.setBoardName(c.getString(c.getColumnIndex(FIELD_BOARD_DISPLAY_NAME)));
-    		post.setBoardUrl(c.getString(c.getColumnIndex(FIELD_BOARD_URI_HOST)));
-    		post.setWriterName(c.getString(c.getColumnIndex(FIELD_POST_WRITER_NAME)));
-    		post.setProfileImageUrl(c.getString(c.getColumnIndex(FIELD_POST_WRITER_PHOTO_URL)));
-    		post.setTimeStamp(c.getString(c.getColumnIndex(FIELD_POST_TIMESTAMP)));
-    		post.setReadCount(c.getInt(c.getColumnIndex(FIELD_POST_CLICK_COUNT)));
-    		post.setAsRead(c.getInt(c.getColumnIndex(FIELD_POST_ISREAD)) > 0 ? true : false);
-    		
-    		if (DEBUG_LOG && DEBUG_LOG_VERBOSE) {
-    			Log.d("[" + post.getId() + "]: " + post.toString());
-    		}
-    		mPostList.add(post);
-    	}
-    	c.close();
+    protected void onRefresh() {
+		String uri_host = getUriHost();
+		if (DEBUG_LOG) Log.d("onRefresh(): " + uri_host);
+		if ("recent".equals(uri_host)) {
+			showProgressBarIndeterminateVisibility(true);
+			mParseThread = new ParseMainPageThread(Uri.parse(BOARD_URI_SCHEME + uri_host), mHandler);
+			mParseThread.start();
+		} else {
+			showProgressBarIndeterminateVisibility(true);
+			mView.findViewById(R.id.iv_splash).setVisibility(View.GONE);
+			mParseThread = new ParseBoardPageThread(Uri.parse(BOARD_URI_SCHEME + uri_host), mHandler);
+			mParseThread.start();
+		}
     }
     
-    protected void savePostList(ArrayList<Post> post_list) {
-        for(Post post : post_list) {
-        	savePost(post);
-        }
+    protected void showProgressBarIndeterminateVisibility(boolean visible) {
+		((MainActivity)getActivity()).showProgressBarIndeterminateVisibility(visible);
     }
     
-    @SuppressWarnings("unused")
-	protected void savePost(Post post) {
-    	ContentResolver cr = getBaseContext().getContentResolver();
-    	
-    	if (isExist(post.getId())) {
-    		if (DEBUG_LOG && DEBUG_LOG_VERBOSE) Log.e("[" + post.getId() + "] " + post.getUrl() + ", " + Uri.parse(post.getUrl()).getLastPathSegment() + " exist!!!");
-    		return;
-    	}
+    protected void hideSplashImage() {
+		Animation fadeOut = new AlphaAnimation(1, 0);
+	    fadeOut.setDuration(ANIMATION_FADEOUT_DURATION);
+	    fadeOut.setAnimationListener(new AnimationListener() {
+			@Override
+			public void onAnimationStart(Animation animation) {
+			}
+			
+			@Override
+			public void onAnimationRepeat(Animation animation) {
+			}
+			
+			@Override
+			public void onAnimationEnd(Animation animation) {
+				mView.findViewById(R.id.iv_splash).setVisibility(View.GONE);
+			}
+		});
+	    
+	    if (mShowSplash) {
+	    	mView.findViewById(R.id.iv_splash).startAnimation(fadeOut);
+	    	mShowSplash = false;
+	    }
+    }
+    
 
-    	ContentValues values = new ContentValues();
-        values.clear();
-        values.put(FIELD_POST_ID, post.getId());
-        values.put(FIELD_POST_URL, post.getUrl());
-        values.put(FIELD_POST_TITLE, post.getTitle());
-        values.put(FIELD_BOARD_URI_HOST,post.getBoardUri());
-        values.put(FIELD_BOARD_DISPLAY_NAME, post.getBoardName());
-        values.put(FIELD_POST_CLICK_COUNT, post.getReadCount());
-        values.put(FIELD_POST_WRITER_NAME, post.getWriterName());
-        values.put(FIELD_POST_WRITER_PHOTO_URL, post.getProfileImageUrl());
-        values.put(FIELD_POST_TIMESTAMP, post.getTimeStamp());
-        values.put(FIELD_POST_ISREAD, post.isRead() ? 1 : 0);
-        values.put(FIELD_CREATED_AT, post.getTime());
-        values.put(FIELD_UPDATED_AT, System.currentTimeMillis());
-        Uri uri = cr.insert(CacheProvider.POST_URI, values);
-        
-        if (DEBUG_LOG && DEBUG_LOG_VERBOSE) {
-        	Log.v("savePost():" + uri.toString());
-        }
-    }
     
     protected long getMaxPostId() {
     	long max_id = 0;
@@ -269,56 +244,39 @@ public class BoardFragment extends SherlockFragment implements Const, DbConst {
     	return max_id;
     }
     
-    protected boolean isExist(int post_id) {
-    	boolean is_exist = false;
 
-    	ContentResolver cr = getBaseContext().getContentResolver();
-    	String where = FIELD_POST_ID + " = " + post_id;
-    	Cursor c = cr.query(CacheProvider.POST_URI, CacheProvider.TablePost.PROJECTION_ALL, 
-    			where, null, null);
-    	
-    	is_exist = (c.getCount() > 0) ? true : false;
-    	
-    	c.close();
-    	return is_exist;
-    }
-    
-    protected void setAsRead(int post_id) {
-    	ContentResolver cr = getBaseContext().getContentResolver();
-    	String where = FIELD_POST_ID + " = " + post_id;
-    	ContentValues cv = new ContentValues();
-    	cv.put(FIELD_POST_ISREAD, 1);
-    	cr.update(CacheProvider.POST_URI, cv, where, null);
-    }
     
     protected Handler mHandler = new Handler() {
     	public void handleMessage(Message msg) {
     		switch(msg.what) {
     		case MSG_PARSE_MAIN_PAGE_DONE:
-    			loadPostList();
+    			mNewPostMap.clear();
+    			if (msg.obj instanceof ArrayList<?>) {
+    				int pos = 0;
+        			ArrayList<Post> post_list = (ArrayList<Post>)msg.obj;
+        			
+    				int max_post_id = -1;
+    				if (mPostList.size() > 0) {
+    					max_post_id = mPostList.get(0).getId();
+    				}
+        			
+        			for(Post post : post_list) {
+        				Log.d("[" + post.getId() + "]: " + post.getTitle());
+        				if (post.getId() > max_post_id || post.isPinned()) {
+        					if (!post.isPinned()) {
+        						mNewPostMap.put(post.getId(), true);
+        					}
+        					mPostList.add(pos++, post);
+        	    			PostManager.getInstance(getBaseContext()).savePost(post);
+        				} else {
+        					break;
+        				}
+        			}
+    			}
     			mPtrView.onRefreshComplete();
     			mPostAdapter.notifyDataSetChanged();
-    			Animation fadeOut = new AlphaAnimation(1, 0);
-    		    fadeOut.setDuration(ANIMATION_FADEOUT_DURATION);
-    		    fadeOut.setAnimationListener(new AnimationListener() {
-					@Override
-					public void onAnimationStart(Animation animation) {
-					}
-					
-					@Override
-					public void onAnimationRepeat(Animation animation) {
-					}
-					
-					@Override
-					public void onAnimationEnd(Animation animation) {
-						mView.findViewById(R.id.iv_splash).setVisibility(View.GONE);
-					}
-				});
-    		    
-    		    if (mShowSplash) {
-       		    	mView.findViewById(R.id.iv_splash).startAnimation(fadeOut);
-       		    	mShowSplash = false;
-    		    }
+    			hideSplashImage();
+    			showProgressBarIndeterminateVisibility(false);
     			break;
     		case MSG_PARSE_BOARD_PAGE_DONE:
     			if (msg.obj instanceof ArrayList<?>) {
@@ -327,6 +285,7 @@ public class BoardFragment extends SherlockFragment implements Const, DbConst {
     			}
     			mPtrView.onRefreshComplete();
     			mPostAdapter.notifyDataSetChanged();
+    			showProgressBarIndeterminateVisibility(false);
     			break;
     		}
     	}
@@ -369,7 +328,7 @@ public class BoardFragment extends SherlockFragment implements Const, DbConst {
 			}
 			if (post.isRead()) {
 				holder.tv_title.setTextColor(Color.DKGRAY);
-				//holder.tv_title.setTypeface(null, Typeface.NORMAL);
+				holder.tv_title.setTypeface(null, Typeface.NORMAL);
 				holder.tv_writer.setTextColor(Color.DKGRAY);
 				holder.tv_timestamp.setTextColor(Color.DKGRAY);
 				holder.tv_board.setTextColor(Color.DKGRAY);
@@ -379,8 +338,16 @@ public class BoardFragment extends SherlockFragment implements Const, DbConst {
 					holder.iv_profile.setAlpha(80);
 				}
 			} else {
-				holder.tv_title.setTextColor(Color.WHITE);
-				//holder.tv_title.setTypeface(null, Typeface.BOLD);
+				if (post.isPinned()) {
+					holder.tv_title.setTextColor(Color.YELLOW);
+					holder.tv_title.setTypeface(null, Typeface.NORMAL);
+				} else if (mNewPostMap.containsKey(post.getId()) && mNewPostMap.get(post.getId())) {
+					holder.tv_title.setTextColor(Color.WHITE);
+					holder.tv_title.setTypeface(null, Typeface.BOLD);
+				} else {
+					holder.tv_title.setTextColor(Color.LTGRAY);
+					holder.tv_title.setTypeface(null, Typeface.NORMAL);
+				}
 				holder.tv_writer.setTextColor(Color.LTGRAY);
 				holder.tv_timestamp.setTextColor(Color.LTGRAY);
 				holder.tv_board.setTextColor(Color.LTGRAY);

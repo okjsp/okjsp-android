@@ -20,7 +20,7 @@ import java.util.ArrayList;
 
 import net.okjsp.R;
 import net.okjsp.data.Board;
-import net.okjsp.data.BoardManager;
+import net.okjsp.manager.BoardManager;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Typeface;

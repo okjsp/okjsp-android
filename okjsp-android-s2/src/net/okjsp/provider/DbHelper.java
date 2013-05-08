@@ -17,7 +17,7 @@ public class DbHelper extends SQLiteOpenHelper implements DbConst {
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(getTableBoardSql_v1());
-        db.execSQL(getTablePostSql_v1());
+        db.execSQL(getTablePostSql_v2());
     }
 
     @Override
@@ -44,7 +44,7 @@ public class DbHelper extends SQLiteOpenHelper implements DbConst {
         return table_post.toString();
     }
     
-    protected String getTablePostSql_v1() {
+    protected String getTablePostSql_v2() {
         StringBuilder table_post = new StringBuilder();
         table_post.append("CREATE TABLE ").append(TABLE_POST).append(" ( ")
                 .append(BaseColumns._ID).append(" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, ")

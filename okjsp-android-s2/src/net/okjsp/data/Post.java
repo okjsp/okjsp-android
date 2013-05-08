@@ -25,16 +25,13 @@ public class Post implements Const, Parcelable {
 	protected String TimeStamp;
 	protected boolean IsEmpty = true;
 	protected boolean IsRead = false;
+	protected boolean IsPinned = false;
 	protected int ReadCount;
 	protected int CommentNum;
 	
 	public int getId() {
 		if (Id < 1 && !TextUtils.isEmpty(Url)) {
-			try {
-				Id = Integer.valueOf(Uri.parse(Url).getLastPathSegment());
-			} catch (NumberFormatException e) {
-				
-			}
+			Id = extractPostId(Url);
 		}
 		
 		return Id;
@@ -184,12 +181,41 @@ public class Post implements Const, Parcelable {
 		return IsEmpty;
 	}
 	
+	public Post setPinned(boolean pin) {
+		IsPinned = pin;
+		return this;
+	}
+
+	public boolean isPinned() {
+		return IsPinned;
+	}
+	
 	public boolean isValid() {
 		boolean valid = false;
 		
 		valid = !TextUtils.isEmpty(getWriterName());
 		
 		return valid;
+	}
+	
+	public int extractPostId(String url) {
+		int post_id = -1;
+		
+		if ("Sponsored".equals(url)) {
+			this.setPinned(true);
+		} else {
+			int index = url.indexOf("?"); // /f.jsp?/seq/219160
+			if (index >= 0) {
+				url = url.substring(index + 1);
+			}
+			try {
+				this.setId(Integer.valueOf(Uri.parse(url).getLastPathSegment()));
+			} catch (NumberFormatException e) {
+				Log.w("NumberFormatException: " + url + ", " + Uri.parse(url).getLastPathSegment());
+			}
+		}
+		
+		return post_id;
 	}
 
 	public Post() {
