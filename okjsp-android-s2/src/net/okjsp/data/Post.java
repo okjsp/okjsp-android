@@ -13,7 +13,7 @@ import android.os.Parcelable;
 import android.text.TextUtils;
 
 public class Post implements Const, Parcelable {
-	protected static final boolean DEBUG_LOG = true;
+	protected static final boolean DEBUG_LOG = false;
 	
 	protected int Id;
 	protected String BoardName;
@@ -22,17 +22,16 @@ public class Post implements Const, Parcelable {
 	protected String Url;
 	protected String WriterName;
 	protected String ProfileImageUrl;
-	protected int ReadCount;
 	protected String TimeStamp;
-	protected boolean IsEmpty = true;;
+	protected boolean IsEmpty = true;
+	protected boolean IsRead = false;
+	protected boolean IsPinned = false;
+	protected int ReadCount;
+	protected int CommentNum;
 	
 	public int getId() {
 		if (Id < 1 && !TextUtils.isEmpty(Url)) {
-			try {
-				Id = Integer.valueOf(Uri.parse(Url).getLastPathSegment());
-			} catch (NumberFormatException e) {
-				
-			}
+			Id = extractPostId(Url);
 		}
 		
 		return Id;
@@ -55,7 +54,8 @@ public class Post implements Const, Parcelable {
 	}
 
 	public String getBoardUrl() {
-		return BoardUrl;
+		return TextUtils.isEmpty(BoardUrl) ? null : 
+			Url.startsWith(BASE_URL) ? BoardUrl : (BASE_URL + BoardUrl);
 	}
 
 	public Post setBoardUrl(String boardUrl) {
@@ -64,6 +64,22 @@ public class Post implements Const, Parcelable {
 		return this;
 	}
 
+	public String getBoardUri() {
+		return TextUtils.isEmpty(BoardUrl) ? null : 
+			Url.startsWith(BASE_URL) ? Uri.parse(BoardUrl).getHost() : (BoardUrl);
+	}
+
+	public Post setBoardUri(String boardUri) {
+		if (!TextUtils.isEmpty(boardUri)) IsEmpty = false;
+		else {
+			BoardUrl = boardUri;
+			return this;
+		}
+		
+		BoardUrl = boardUri.startsWith(BASE_URL) ? boardUri : (BASE_URL + boardUri);
+		return this;
+	}
+	
 	public String getTitle() {
 		return Title;
 	}
@@ -152,8 +168,26 @@ public class Post implements Const, Parcelable {
 		return time;
 	}
 	
+	public Post setAsRead(boolean is_read) {
+		IsRead = is_read;
+		return this;
+	}
+
+	public boolean isRead() {
+		return IsRead;
+	}
+	
 	public boolean isEmpty() {
 		return IsEmpty;
+	}
+	
+	public Post setPinned(boolean pin) {
+		IsPinned = pin;
+		return this;
+	}
+
+	public boolean isPinned() {
+		return IsPinned;
 	}
 	
 	public boolean isValid() {
@@ -162,6 +196,26 @@ public class Post implements Const, Parcelable {
 		valid = !TextUtils.isEmpty(getWriterName());
 		
 		return valid;
+	}
+	
+	public int extractPostId(String url) {
+		int post_id = -1;
+		
+		if ("Sponsored".equals(url)) {
+			this.setPinned(true);
+		} else {
+			int index = url.indexOf("?"); // /f.jsp?/seq/219160
+			if (index >= 0) {
+				url = url.substring(index + 1);
+			}
+			try {
+				this.setId(Integer.valueOf(Uri.parse(url).getLastPathSegment()));
+			} catch (NumberFormatException e) {
+				Log.w("NumberFormatException: " + url + ", " + Uri.parse(url).getLastPathSegment());
+			}
+		}
+		
+		return post_id;
 	}
 
 	public Post() {

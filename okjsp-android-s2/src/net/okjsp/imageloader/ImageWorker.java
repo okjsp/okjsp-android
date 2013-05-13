@@ -163,7 +163,7 @@ public abstract class ImageWorker {
             bitmapWorkerTask.cancel(true);
             if (BuildConfig.DEBUG) {
                 final Object bitmapData = bitmapWorkerTask.data;
-                Log.d(TAG, "cancelWork - cancelled work for " + bitmapData);
+                Log.w(TAG, "cancelWork - cancelled work for " + bitmapData);
             }
         }
     }

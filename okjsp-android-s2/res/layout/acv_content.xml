@@ -14,22 +14,9 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 -->
-<LinearLayout 
+<FrameLayout 
     xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/content"
     android:layout_width="match_parent"
-	android:layout_height="match_parent"
-	android:orientation="vertical">
-	<include layout="@layout/activity_main_inc_header"/>
-
-	<View
-        android:id="@+id/divider"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/divider_size"
-        android:background="@color/divider"/>
-	
-	<FrameLayout 
-	    android:id="@+id/content"
-	    android:layout_width="match_parent"
-	    android:layout_height="0dp"
-	    android:layout_weight="1"/>
-</LinearLayout>
+    android:layout_height="match_parent"
+    android:background="#000000"/>
