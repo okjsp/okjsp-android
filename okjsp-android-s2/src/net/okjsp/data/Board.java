@@ -5,19 +5,18 @@ import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
 
+import net.okjsp.Const;
 import android.net.Uri;
-import android.text.TextUtils;
 
-public class Board implements Externalizable {
+public class Board implements Externalizable, Const {
 	protected String Title;
-	protected String Url;
-	protected Uri    mUri;
+	protected Uri    NameUri; // 'board://notice'
 	protected int ClickCount;
 	protected long TimeStamp;
 	
-	public Board(String title, String url) {
+	public Board(String title, String uri) {
 		setTitle(title);
-		setUrl(url);
+		setUri(uri);
 	}
 	
 	public String getTitle() {
@@ -27,19 +26,16 @@ public class Board implements Externalizable {
 		Title = title;
 	}
 	public String getId() {
-		return mUri.getHost();
+		return NameUri.getHost();
 	}
 	public String getUrl() {
-		return Url;
-	}
-	public void setUrl(String url) {
-		Url = url;
-		if (!TextUtils.isEmpty(url)) {
-			mUri = Uri.parse(url);
-		}
+		return BBS_BOARD_URL + NameUri.getHost();
 	}
 	public Uri getUri() {
-		return mUri;
+		return NameUri;
+	}
+	public void setUri(String uri) {
+		NameUri = Uri.parse(uri);
 	}
 	public int getClickCount() {
 		return ClickCount;
@@ -56,14 +52,14 @@ public class Board implements Externalizable {
 	@Override
 	public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
 		setTitle(in.readUTF());
-		setUrl(in.readUTF());
+		setUri(in.readUTF());
 		setClickCount(in.readInt());
 		setTimeStamp(in.readLong());
 	}
 	@Override
 	public void writeExternal(ObjectOutput out) throws IOException {
 		out.writeUTF(Title);
-		out.writeUTF(Url);
+		out.writeUTF(getUri().toString());
 		out.writeInt(ClickCount);
 		out.writeLong(getTimeStamp());
 	}

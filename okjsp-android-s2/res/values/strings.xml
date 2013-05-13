@@ -2,8 +2,13 @@
 <resources>
 
     <string name="app_name">OKjsp</string>
-    <string name="action_settings">Settings</string>
-
+    
+    <!-- Menu strings -->
+    <string name="action_settings">설정</string>
+    <string name="action_browser">브라우저에서 보기</string>
+    <string name="action_share">공유</string>
+    <string name="action_share_to">공유&#8230;</string>
+    
     <string name="desc_image_startup">OKJSP 첫 시작 화면</string>
     <string name="desc_image_left_menu">누르면 왼쪽 메뉴가 열립니다</string>
 
@@ -24,4 +29,14 @@
     <string name="pull_to_refresh_refreshing_label">Loading&#8230;</string>
     <string name="pull_to_refresh_tap_label">Tap to refresh&#8230;</string>
     
+    <!-- Setting Preferences -->
+    <string name="pref_send_report">Send crash reports</string>
+    <string name="pref_send_report_summary">Helps to fix bugs</string>
+    <string name="pref_sync_frequency">Sync frequency</string>
+    <string name="pref_sync_frequency_summary">Set the sync frequency</string>
+    <string name="pref_user_name">Set username</string>
+    <string name="pref_user_name_summary">Set your username</string>
+     
+    <string name="pref_user_profile">User Profile</string>
+    <string name="pref_update_setting">Update Settings</string>    
 </resources>

@@ -9,4 +9,10 @@ public interface Const {
 	
 	public static final String BOARD_URI_SCHEME = "board://";
 	public static final String IMAGE_CACHE_DIR = "cache";
+	
+	public static final int POST_TYPE_NOTICE = 1;
+    public static final int POST_TYPE_RECENT = 2;
+	
+	public static final int MSG_PARSE_MAIN_PAGE_DONE = 1;
+	public static final int MSG_PARSE_BOARD_PAGE_DONE = 2;
 }
