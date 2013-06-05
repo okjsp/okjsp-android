@@ -1,13 +1,5 @@
 package net.okjsp.manager;
 
-import java.util.ArrayList;
-
-import net.okjsp.Const;
-import net.okjsp.R;
-import net.okjsp.data.Board;
-import net.okjsp.provider.DbConst;
-import net.okjsp.provider.CacheProvider;
-import net.okjsp.util.Log;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
@@ -15,6 +7,15 @@ import android.content.res.Resources;
 import android.database.Cursor;
 import android.net.Uri;
 import android.text.TextUtils;
+
+import net.okjsp.Const;
+import net.okjsp.R;
+import net.okjsp.data.Board;
+import net.okjsp.provider.CacheProvider;
+import net.okjsp.provider.DbConst;
+import net.okjsp.util.Log;
+
+import java.util.ArrayList;
 
 public class BoardManager implements Const, DbConst {
 	protected static BoardManager mInstance = null;
@@ -31,8 +32,13 @@ public class BoardManager implements Const, DbConst {
 	
 	public BoardManager(Context context) {
 		mContext = context;
-		
-		if (loadBoardList() < 1) {
+
+        // 게시판 목록이 cache가 없거나 목록 개수가 다르면 재구성한다.
+        // FIXME: 게시판 목록이 변경되었는데 개수가 같은 경우 예외처리 필요.
+        int board_count = loadBoardList();
+        int board_array_count = mContext.getResources().getStringArray(R.array.actions_names).length;
+		if (board_count < 1 || board_count != board_array_count) {
+            mBoardList.clear();
 			initBoardList();
 		}
 		
@@ -74,9 +80,24 @@ public class BoardManager implements Const, DbConst {
         	cv.put(FIELD_BOARD_DISPLAY_NAME, titles[i]);
         	cv.put(FIELD_BOARD_INDEX, i);
         	cv.put(FIELD_CREATED_AT, System.currentTimeMillis());
-        	
-        	cr.insert(CacheProvider.BOARD_URI, cv);
-        	
+
+            String where = FIELD_BOARD_URI_HOST + " = '" + uri.getHost() + "'";
+            Cursor c = null;
+            try {
+                c = cr.query(CacheProvider.BOARD_URI, CacheProvider.TableBoard.PROJECTION_ALL, where, null, null);
+                if (c.getCount() < 1) {
+                    cr.insert(CacheProvider.BOARD_URI, cv);
+                } else if (DEBUG_LOG) {
+                    Log.d("initBoardList(): add new board - " + uris[i]);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                if (c != null) {
+                    c.close();
+                }
+            }
+
         	Board board = new Board(titles[i], uris[i]);
         	mBoardList.add(board);
         }
