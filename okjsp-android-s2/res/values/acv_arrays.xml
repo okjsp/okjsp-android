@@ -13,85 +13,6 @@
   limitations under the License.
 -->
 <resources>
-
-    <!-- Actions -->
-    <array name="actions_icons">
-        <item>@null</item>
-        
-        <item>@null</item>
-        <item>@drawable/ic_action_about</item>
-        
-        <item>@drawable/ic_action_about</item>
-        <item>@drawable/ic_action_about</item>
-        <item>@drawable/ic_action_about</item>
-        <item>@drawable/ic_action_about</item>
-        <item>@drawable/ic_action_about</item>
-        
-        <item>@drawable/ic_action_about</item>
-        <item>@drawable/ic_action_about</item>
-        <item>@drawable/ic_action_about</item>
-        <item>@drawable/ic_action_about</item>
-        <item>@drawable/ic_action_about</item>
-        
-        <item>@drawable/ic_action_about</item>
-        <item>@drawable/ic_action_about</item>
-        <item>@drawable/ic_action_about</item>
-        <item>@drawable/ic_action_about</item>
-        <item>@drawable/ic_action_about</item>
-        
-        <item>@drawable/ic_action_about</item>
-        <item>@drawable/ic_action_about</item>
-        <item>@drawable/ic_action_about</item>
-        <item>@drawable/ic_action_about</item>
-        <item>@drawable/ic_action_about</item>
-
-        <item>@drawable/ic_action_about</item>
-        <item>@drawable/ic_action_about</item>
-        <item>@drawable/ic_action_about</item>
-        <item>@drawable/ic_action_about</item>
-        <item>@drawable/ic_action_about</item>
-        
-        <item>@drawable/ic_action_about</item>
-        <item>@drawable/ic_action_about</item>
-        <item>@drawable/ic_action_about</item>
-        <item>@drawable/ic_action_about</item>
-        <item>@drawable/ic_action_about</item>
-        
-        <item>@drawable/ic_action_about</item>
-        <item>@drawable/ic_action_about</item>
-        <item>@drawable/ic_action_about</item>
-        <item>@drawable/ic_action_about</item>
-        <item>@drawable/ic_action_about</item>
-        
-        <item>@drawable/ic_action_about</item>
-        <item>@drawable/ic_action_about</item>
-        <item>@drawable/ic_action_about</item>
-        <item>@drawable/ic_action_about</item>
-        <item>@drawable/ic_action_about</item>
-
-        <item>@drawable/ic_action_about</item>
-        <item>@drawable/ic_action_about</item>
-        <item>@drawable/ic_action_about</item>
-        <item>@drawable/ic_action_about</item>
-        <item>@drawable/ic_action_about</item>
-        
-        <item>@drawable/ic_action_about</item>
-        <item>@drawable/ic_action_about</item>
-        <item>@drawable/ic_action_about</item>
-        <item>@drawable/ic_action_about</item>
-        <item>@drawable/ic_action_about</item>
-        
-        <item>@drawable/ic_action_about</item>
-        <item>@drawable/ic_action_about</item>
-        <item>@drawable/ic_action_about</item>
-        <item>@drawable/ic_action_about</item>
-        <item>@drawable/ic_action_about</item>
-        
-        <item>@drawable/ic_action_about</item>
-        <item>@drawable/ic_action_about</item>
-        <item>@drawable/ic_action_about</item>
-    </array>
-
     <string-array name="anchor_names">
         <item>Profile</item>
         
@@ -101,6 +22,7 @@
     </string-array>
     
     <string-array name="actions_names">
+        <item>협동조합준비위</item>
         <item>사는 얘기</item>
         <item>구인/구직</item>
         <item>홍보</item>
@@ -174,6 +96,7 @@
     </string-array>
     
     <string-array name="actions_links">
+        <item>board://cooper</item>
         <item>board://lifeqna</item>
         <item>board://recruit</item>
         <item>board://pr</item>
